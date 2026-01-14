@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>List page</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="app.css">
+</head>
+<body class="app-bg-img list-page">
+    <nav class="navbar navbar-expand-lg navbar-white bg-white sticky-top px-20">
+        <ul class="nav gap-2">
+            <li class="nav-item">
+                <a class="nav-link active rounded" href="#"><i class="bi bi-house-door me-2"></i> Dashboard</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link rounded" href="#" onclick="javaBackend.loadAnalytics()"><i
+                        class="bi bi-graph-up me-2"></i> Jobs list</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link rounded" href="#"><i class="bi bi-layers me-2"></i> Resume Analyzer</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link rounded" href="#"><i class="bi bi-gear me-2"></i> Settings</a>
+            </li>
+        </ul>
+    </nav>
+
+    <div class="container mt-20">
+        <div class="table-container">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="h4 mb-0"><i class="bi bi-briefcase me-2"></i>Active Job Descriptions</h2>
+                <button class="btn btn-primary" onclick="javaBackend.navigateToCreate()">
+                    <i class="bi bi-plus-lg me-1"></i> Add New
+                </button>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-end-0"><i class="bi bi-search"></i></span>
+                        <input type="text" id="searchInput" class="form-control border-start-0" placeholder="Search by Job Label..." onkeyup="filterTable()">
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle" id="jobTable">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Job Label</th>
+                            <th>Role</th>
+                            <th>Experience</th>
+                            <th>Created Date</th>
+                            <th class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="jobTableBody">
+                        <tr>
+                            <td><strong>Senior Java Developer</strong></td>
+                            <td>Software Developer</td>
+                            <td>6-10 years</td>
+                            <td>Jan 14, 2026</td>
+                            <td class="text-center">
+                                <button class="btn btn-outline-info btn-sm me-1" onclick="javaBackend.editJob(1)"><i class="bi bi-pencil"></i></button>
+                                <button class="btn btn-outline-danger btn-sm" onclick="javaBackend.deleteJob(1)"><i class="bi bi-trash"></i></button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Senior Java Developer</strong></td>
+                            <td>Software Developer</td>
+                            <td>6-10 years</td>
+                            <td>Jan 14, 2026</td>
+                            <td class="text-center">
+                                <button class="btn btn-outline-info btn-sm me-1" onclick="javaBackend.editJob(1)"><i class="bi bi-pencil"></i></button>
+                                <button class="btn btn-outline-danger btn-sm" onclick="javaBackend.deleteJob(1)"><i class="bi bi-trash"></i></button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Senior Java Developer</strong></td>
+                            <td>Software Developer</td>
+                            <td>6-10 years</td>
+                            <td>Jan 14, 2026</td>
+                            <td class="text-center">
+                                <button class="btn btn-outline-info btn-sm me-1" onclick="javaBackend.editJob(1)"><i class="bi bi-pencil"></i></button>
+                                <button class="btn btn-outline-danger btn-sm" onclick="javaBackend.deleteJob(1)"><i class="bi bi-trash"></i></button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="app.js"></script>
+    <script>
+        // Function to filter the table locally for quick search
+        function filterTable() {
+            let input = document.getElementById("searchInput").value.toUpperCase();
+            let rows = document.getElementById("jobTableBody").getElementsByTagName("tr");
+            
+            for (let row of rows) {
+                let text = row.cells[0].textContent || row.cells[0].innerText;
+                row.style.display = text.toUpperCase().indexOf(input) > -1 ? "" : "none";
+            }
+        }
+
+        // This function can be called FROM Java to refresh the UI with new data
+        function updateTable(jsonList) {
+            const jobs = JSON.parse(jsonList);
+            const body = document.getElementById("jobTableBody");
+            body.innerHTML = ""; // Clear current list
+
+            jobs.forEach(job => {
+                body.innerHTML += `
+                    <tr>
+                        <td><strong>${job.label}</strong></td>
+                        <td>${job.role}</td>
+                        <td>${job.experience}</td>
+                        <td>${new Date().toLocaleDateString()}</td>
+                        <td class="text-center">
+                            <button class="btn btn-outline-info btn-sm me-1" onclick="javaBackend.editJob('${job.id}')"><i class="bi bi-pencil"></i></button>
+                            <button class="btn btn-outline-danger btn-sm" onclick="javaBackend.deleteJob('${job.id}')"><i class="bi bi-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+    </script>
+</body>
+</html>

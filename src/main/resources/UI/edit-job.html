@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit page</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="app.css">
+</head>
+
+<body class="app-bg-img edit-page">
+    <nav class="navbar navbar-expand-lg navbar-white bg-white sticky-top px-20">
+        <ul class="nav gap-2">
+            <li class="nav-item">
+                <a class="nav-link active rounded" href="#"><i class="bi bi-house-door me-2"></i> Dashboard</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link rounded" href="#" onclick="javaBackend.loadAnalytics()"><i
+                        class="bi bi-graph-up me-2"></i> Jobs list</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link rounded" href="#"><i class="bi bi-layers me-2"></i> Resume Analyzer</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link rounded" href="#"><i class="bi bi-gear me-2"></i> Settings</a>
+            </li>
+        </ul>
+    </nav>
+
+    <div class="card form-card mt-20">
+        <div class="card-header bg-primary text-white p-3">
+            <h5 class="mb-0"><i class="bi bi-plus-circle me-2"></i>Edit Job Description</h5>
+        </div>
+        <div class="card-body p-4">
+            <form id="jobForm">
+                <div class="mb-3">
+                    <label for="jobLabel" class="form-label fw-bold">Job Label</label>
+                    <input type="text" class="form-control" id="jobLabel" placeholder="e.g. Senior Backend Engineer"
+                        readonly required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="role" class="form-label fw-bold">Role</label>
+                    <select class="form-select" id="role" required>
+                        <option value="" selected disabled>Select Role Type</option>
+                        <option value="developer">Software Developer</option>
+                        <option value="designer">UI/UX Designer</option>
+                        <option value="manager">Project Manager</option>
+                        <option value="qa">QA Engineer</option>
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <label for="experience" class="form-label fw-bold">Required Experience</label>
+                    <select class="form-select" id="experience" required>
+                        <option value="" selected disabled>Select Experience Level</option>
+                        <option value="entry">Entry Level (0-2 years)</option>
+                        <option value="mid">Mid-Senior (3-5 years)</option>
+                        <option value="senior">Senior (6-10 years)</option>
+                        <option value="lead">Lead / Architect (10+ years)</option>
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <label for="status" class="form-label fw-bold">Status</label>
+                    <select class="form-select" id="status" required>
+                        <option value="" selected disabled>Select Status</option>
+                        <option value="1">Active</option>
+                        <option value="0">De-Active</option>
+                    </select>
+                </div>
+                <option value="lead">Lead / Architect (10+ years)</option>
+                </select>
+        </div>
+
+        <div class="mb-4 d-grid1 text-center">
+            <button type="button" class="btn btn-primary btn-lg" onclick="submitToJava()">
+                <i class="bi bi-check-lg me-2"></i>Update Job
+            </button>
+        </div>
+        </form>
+    </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>

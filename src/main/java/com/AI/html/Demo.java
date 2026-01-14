@@ -15,28 +15,27 @@ public class Demo extends Application {
         WebEngine webEngine = webView.getEngine();
 
         // Load your HTML file
-        String url = getClass().getResource("index.html").toExternalForm();
-        webEngine.load(url);
+        // String pageUrl = getClass().getResource("/UI/dashboard.html").toExternalForm();
+        String pageUrl = getClass().getResource("/UI/create-job.html").toExternalForm();
+        // String pageUrl = getClass().getResource("/UI/edit-job.html").toExternalForm();
+        // String pageUrl = getClass().getResource("/UI/list-job.html").toExternalForm();
+        webEngine.load(pageUrl);
 
         // Bridge: Allow JavaScript to call Java methods
         webEngine.getLoadWorker().stateProperty().addListener((obs, oldState, newState) -> {
             if (newState == javafx.concurrent.Worker.State.SUCCEEDED) {
                 JSObject window = (JSObject) webEngine.executeScript("window");
-                window.setMember("javaConnector", new JavaBridge());
+                window.setMember("javaBackend", new JsBackendAction());
             }
         });
 
         Scene scene = new Scene(webView, 800, 600);
         stage.setScene(scene);
-        stage.setTitle("Java HTML UI");
-        stage.show();
-    }
+        // Set to maximized
+        stage.setMaximized(true);
 
-    // This class handles actions triggered from HTML
-    public class JavaBridge {
-        public void sayHello() {
-            System.out.println("Button clicked in HTML! Logic running in Java.");
-        }
+        stage.setTitle("AI Resume Analyzer");
+        stage.show();
     }
 
     public static void main(String[] args) {

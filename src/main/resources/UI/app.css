@@ -1,0 +1,55 @@
+/* START: Common CSS*/
+/* body {
+    background-color: #f8f9fa;
+} */
+body {
+    background-color: #f8f9fa;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin-right: 8px;
+}
+
+.form-card {
+    max-width: 600px;
+    margin: auto;
+    border: none;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+}
+
+.card {
+    border: none;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.mt-20 {
+    margin-top: 20vh;
+}
+
+.px-20 {
+    padding-left: 20rem;
+    padding-right: 20rem;
+}
+
+.app-bg-img {
+    /* background-image: url('https://img.freepik.com/free-vector/background-with-black-lines_1051-1040.jpg?semt=ais_hybrid&w=1040&q=80');
+    background-size: cover;
+    background-position: center; */
+    background: linear-gradient(rgba(0, 0, 0, 0.76), rgba(223, 55, 78, 0.28)), linear-gradient(white, white);
+    min-height: 100vh;
+}
+
+/* END: Common CSS*/
+
+
+/* START: list page CSS */
+.list-page .table-container {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.list-page .status-badge {
+    font-size: 0.85rem;
+}
+
+/* END: list page CSS */
