@@ -15,17 +15,14 @@ public class Demo extends Application {
         WebEngine webEngine = webView.getEngine();
 
         // Load your HTML file
-        // String pageUrl = getClass().getResource("/UI/dashboard.html").toExternalForm();
-        String pageUrl = getClass().getResource("/UI/create-job.html").toExternalForm();
-        // String pageUrl = getClass().getResource("/UI/edit-job.html").toExternalForm();
-        // String pageUrl = getClass().getResource("/UI/list-job.html").toExternalForm();
+        String pageUrl = getClass().getResource("/UI/dashboard.html").toExternalForm();
         webEngine.load(pageUrl);
 
         // Bridge: Allow JavaScript to call Java methods
         webEngine.getLoadWorker().stateProperty().addListener((obs, oldState, newState) -> {
             if (newState == javafx.concurrent.Worker.State.SUCCEEDED) {
                 JSObject window = (JSObject) webEngine.executeScript("window");
-                window.setMember("javaBackend", new JsBackendAction());
+                window.setMember("javaBackend", new JsBackendAction(stage, webEngine));
             }
         });
 
@@ -36,6 +33,25 @@ public class Demo extends Application {
 
         stage.setTitle("AI Resume Analyzer");
         stage.show();
+    }
+
+    public void navigateTo(String template, Stage stage, WebEngine webEngine) {
+        String pagePath = "/UI/" + template + ".html";
+        if (getClass().getResource(pagePath) == null) {
+            System.out.println("Requested Page not found: " + pagePath);
+            return;
+        }
+
+        String url = getClass().getResource(pagePath).toExternalForm();
+        webEngine.load(url);
+
+        // This must be present to catch EVERY page load, not just the first one
+        webEngine.getLoadWorker().stateProperty().addListener((obs, oldState, newState) -> {
+            if (newState == javafx.concurrent.Worker.State.SUCCEEDED) {
+                JSObject window = (JSObject) webEngine.executeScript("window");
+                window.setMember("javaBackend", new JsBackendAction(stage, webEngine));
+            }
+        });
     }
 
     public static void main(String[] args) {

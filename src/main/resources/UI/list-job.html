@@ -12,17 +12,14 @@
     <nav class="navbar navbar-expand-lg navbar-white bg-white sticky-top px-20">
         <ul class="nav gap-2">
             <li class="nav-item">
-                <a class="nav-link active rounded" href="#"><i class="bi bi-house-door me-2"></i> Dashboard</a>
+                <button class="nav-link nav-btn rounded" href="#" data-href="dashboard"><i class="bi bi-house-door me-2"></i> Dashboard</button>
             </li>
             <li class="nav-item">
-                <a class="nav-link rounded" href="#" onclick="javaBackend.loadAnalytics()"><i
-                        class="bi bi-graph-up me-2"></i> Jobs list</a>
+                <button class="nav-link nav-btn active rounded" href="#" data-href="list-job"><i
+                        class="bi bi-graph-up me-2"></i> Jobs list</button>
             </li>
             <li class="nav-item">
-                <a class="nav-link rounded" href="#"><i class="bi bi-layers me-2"></i> Resume Analyzer</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link rounded" href="#"><i class="bi bi-gear me-2"></i> Settings</a>
+                <button class="nav-link nav-btn rounded" href="#" data-href="resume-analyzer"><i class="bi bi-layers me-2"></i> Resume Analyzer</button>
             </li>
         </ul>
     </nav>
@@ -31,7 +28,7 @@
         <div class="table-container">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h2 class="h4 mb-0"><i class="bi bi-briefcase me-2"></i>Active Job Descriptions</h2>
-                <button class="btn btn-primary" onclick="javaBackend.navigateToCreate()">
+                <button class="btn btn-primary nav-btn" data-href="create-job">
                     <i class="bi bi-plus-lg me-1"></i> Add New
                 </button>
             </div>
@@ -62,8 +59,8 @@
                             <td>6-10 years</td>
                             <td>Jan 14, 2026</td>
                             <td class="text-center">
-                                <button class="btn btn-outline-info btn-sm me-1" onclick="javaBackend.editJob(1)"><i class="bi bi-pencil"></i></button>
-                                <button class="btn btn-outline-danger btn-sm" onclick="javaBackend.deleteJob(1)"><i class="bi bi-trash"></i></button>
+                                <button class="btn btn-outline-info btn-sm me-1 nav-btn" data-href="edit-job"><i class="bi bi-pencil"></i></button>
+                                <button class="btn btn-outline-danger btn-sm nav-btn" data-href="edit-job"><i class="bi bi-trash"></i></button>
                             </td>
                         </tr>
                         <tr>
@@ -72,8 +69,8 @@
                             <td>6-10 years</td>
                             <td>Jan 14, 2026</td>
                             <td class="text-center">
-                                <button class="btn btn-outline-info btn-sm me-1" onclick="javaBackend.editJob(1)"><i class="bi bi-pencil"></i></button>
-                                <button class="btn btn-outline-danger btn-sm" onclick="javaBackend.deleteJob(1)"><i class="bi bi-trash"></i></button>
+                                <button class="btn btn-outline-info btn-sm me-1 nav-btn" data-href="edit-job"><i class="bi bi-pencil"></i></button>
+                                <button class="btn btn-outline-danger btn-sm nav-btn" data-href="edit-job"><i class="bi bi-trash"></i></button>
                             </td>
                         </tr>
                         <tr>
@@ -82,8 +79,8 @@
                             <td>6-10 years</td>
                             <td>Jan 14, 2026</td>
                             <td class="text-center">
-                                <button class="btn btn-outline-info btn-sm me-1" onclick="javaBackend.editJob(1)"><i class="bi bi-pencil"></i></button>
-                                <button class="btn btn-outline-danger btn-sm" onclick="javaBackend.deleteJob(1)"><i class="bi bi-trash"></i></button>
+                                <button class="btn btn-outline-info btn-sm me-1 nav-btn" data-href="edit-job"><i class="bi bi-pencil"></i></button>
+                                <button class="btn btn-outline-danger btn-sm nav-btn" data-href="edit-job"><i class="bi bi-trash"></i></button>
                             </td>
                         </tr>
                     </tbody>
