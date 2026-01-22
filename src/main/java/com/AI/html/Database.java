@@ -1,66 +1,31 @@
 package com.AI.html;
+// import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLIntegrityConstraintViolationException;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-
-
-
-public class Database extends HttpServlet{
-
-    /* protected void doPost(HttpServlet request,HttpServlet response)throws ServletException,IOException{
-        
-    } */
-private String message;
-
-   public void init() throws ServletException {
-      // Do required initialization
-      message = "Hello World";
-   }
-
-   public void doGet(HttpServletRequest request, HttpServletResponse response)
-      throws ServletException, IOException {
-      
-      // Set response content type
-      response.setContentType("text/html");
-
-      // Actual logic goes here.
-      PrintWriter out = response.getWriter();
-      out.println("<h1>" + message + "</h1>");
-   }
-
-   public void destroy() {
-      // do nothing.
-   }
-
-
-
-
-
-
-
-
-
-    /* static final String URL = "jdbc:mysql://localhost:3306/demo";
+public class Database {
+    static final String URL = "jdbc:mysql://localhost:3306/demo";
     static final String USER = "root";
     static final String PASS = "";
     
-    public static boolean addUser(String email, String password) {
-        try (Connection conn = DriverManager.getConnection(URL, USER, PASS)) {
-            
-            // Class.forName("com.mysql.cj.jdbc.Driver");
-            PreparedStatement ps = conn.prepareStatement("INSERT INTO user(email,password) VALUES (?,?)");
-            ps.setString(1, email);
-            ps.setString(2, password);
-            ps.executeUpdate();
+    public static boolean addUser(Connection conn, String role, String exp) {
+        if (conn == null) {
+            System.out.println("Connection is null. Cannot add user.");
+            return false;
+        }
+        try (Connection connection = conn) {
+            PreparedStatement ps = conn.prepareStatement("INSERT INTO jobs(role,exp) VALUES (?,?)");
+            ps.setString(1, role);
+            ps.setString(2, exp);
+            int rowsAffected = ps.executeUpdate();
+            System.out.println(rowsAffected + " record(s) added.");
             return true;
         } catch (SQLIntegrityConstraintViolationException e) {
-            return false; // Email already exists
+            System.out.println("Role already exists: " + role);
+            return false; // Role already exists
         } catch (Exception e) {
             e.printStackTrace();
             return false;
@@ -78,5 +43,24 @@ private String message;
             e.printStackTrace();
             return false;
         }
-    } */
+    }
+
+    public static Connection createConn() {
+        final String URL = "jdbc:sqlite:app.db";
+        final String USER = "user1";
+        final String PASS = "testpass";
+        try {
+            Connection conn = DriverManager.getConnection(URL, USER, PASS);
+            System.out.println("Connection established successfully.");
+            // conn.close();
+            return conn;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+    public static void main(String[] args) {
+        Connection conn = Database.createConn();
+        Database.addUser(conn, "Senior developer", "5 years");
+    }
 }
