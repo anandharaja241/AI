@@ -1,13 +1,52 @@
 package com.AI.html;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLIntegrityConstraintViolationException;
+import java.io.IOException;
+import java.io.PrintWriter;
 
-public class Database {
-    static final String URL = "jdbc:mysql://localhost:3306/demo";
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+
+
+
+public class Database extends HttpServlet{
+
+    /* protected void doPost(HttpServlet request,HttpServlet response)throws ServletException,IOException{
+        
+    } */
+private String message;
+
+   public void init() throws ServletException {
+      // Do required initialization
+      message = "Hello World";
+   }
+
+   public void doGet(HttpServletRequest request, HttpServletResponse response)
+      throws ServletException, IOException {
+      
+      // Set response content type
+      response.setContentType("text/html");
+
+      // Actual logic goes here.
+      PrintWriter out = response.getWriter();
+      out.println("<h1>" + message + "</h1>");
+   }
+
+   public void destroy() {
+      // do nothing.
+   }
+
+
+
+
+
+
+
+
+
+    /* static final String URL = "jdbc:mysql://localhost:3306/demo";
     static final String USER = "root";
     static final String PASS = "";
     
@@ -39,5 +78,5 @@ public class Database {
             e.printStackTrace();
             return false;
         }
-    }
+    } */
 }
