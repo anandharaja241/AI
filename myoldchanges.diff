@@ -1,0 +1,71 @@
+diff --git a/src/main/java/com/AI/html/Database.java b/src/main/java/com/AI/html/Database.java
+index a491fa5..027b40a 100644
+--- a/src/main/java/com/AI/html/Database.java
++++ b/src/main/java/com/AI/html/Database.java
+@@ -16,12 +16,7 @@ public class Database extends HttpServlet{
+     /* protected void doPost(HttpServlet request,HttpServlet response)throws ServletException,IOException{
+         
+     } */
+-private String message;
+-
+-   public void init() throws ServletException {
+-      // Do required initialization
+-      message = "Hello World";
+-   }
++private String message="Hello World";
+ 
+    public void doGet(HttpServletRequest request, HttpServletResponse response)
+       throws ServletException, IOException {
+@@ -35,7 +30,7 @@ private String message;
+    }
+ 
+    public void destroy() {
+-      // do nothing.
++      
+    }
+ 
+ 
+@@ -78,5 +73,7 @@ private String message;
+             e.printStackTrace();
+             return false;
+         }
+-    } */
++    } 
++        it commit -m 'adding database file'
++        git push -u origin dev*/
+ }
+diff --git a/src/main/java/com/AI/html/Demo.java b/src/main/java/com/AI/html/Demo.java
+index a71f8df..f1c863d 100644
+--- a/src/main/java/com/AI/html/Demo.java
++++ b/src/main/java/com/AI/html/Demo.java
+@@ -55,8 +55,8 @@ public class Demo extends Application {
+     }
+ 
+     public static void main(String[] args) {
+-        // launch(args);
+-        new Demo();
++        launch(args);
++       
+ 
+     }
+ }
+\ No newline at end of file
+diff --git a/src/main/java/com/AI/html/Demo.xml b/src/main/java/com/AI/html/Demo.xml
+index 547ea3d..51920e2 100644
+--- a/src/main/java/com/AI/html/Demo.xml
++++ b/src/main/java/com/AI/html/Demo.xml
+@@ -1,10 +1,10 @@
+ <!-- <web app> -->
+ <servlet>
+-     <servlet-name>Demo</servlet-name>
+-     <servlet-class>Demo</servlet-class>
++     <servlet-name>Database</servlet-name>
++     <servlet-class>Database</servlet-class>
+ </servlet>
+ <servlet-mapping>
+-     <servlet-name>Demo</servlet-name>
++     <servlet-name>Database</servlet-name>
+      <url-pattern> <page class="Create.html"></page></url-pattern>
+ </servlet-mapping>
+ <!-- </web app> -->
+\ No newline at end of file
