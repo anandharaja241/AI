@@ -4,6 +4,7 @@ package com.AI.html;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLIntegrityConstraintViolationException;
 
 public class Database {
@@ -47,38 +48,36 @@ public class Database {
         }
     }
 
-    public static void updateConn(Connection conn, int id, String role, String exp) {
-
+    public static boolean updateConn(Connection conn, int id, String role, String exp) {
         try (Connection connection = conn) {
-            PreparedStatement ps = conn.prepareStatement("UPDATE user1 SET role = ?, exp=? WHERE id = ?");
+            PreparedStatement ps = conn.prepareStatement("UPDATE jobs SET role = ?, exp=? WHERE id = ?");
             ps.setString(1, role);
             ps.setString(2, exp);
-            // ps.setInt(0, id);
+            ps.setInt(3, id);
+            ps.executeUpdate();
+            
+            ResultSet rs = ps.executeQuery();
 
-            int affect = ps.executeUpdate();
-            System.out.println(affect + "Update");
+            while(rs.next()){
 
-            /*
-             * while (rs.next()) {
-             * // Display values
-             * System.out.print("Id:" + rs.getString("id")+"\n");
-             * System.out.print("Role:" + rs.getString("role") + "\n");
-             * System.out.println("exp:" + rs.getString("exp") + "\n");
-             * }
-             */
-
+                // Display values
+                System.out.print("Id:" + rs.getString("id")+"\n");
+                System.out.print("Role:" + rs.getString("role") + "\n");
+                System.out.println("exp:" + rs.getString("exp") + "\n");
+            }
+            return true;
+            
+            
+        } 
+        catch (SQLIntegrityConstraintViolationException e) {
+            System.out.println("Role already exists: " + role);
+            // return false; // Role already exists
         }
-        /*
-         * catch (SQLIntegrityConstraintViolationException e) {
-         * System.out.println("Role already exists: " + role);
-         * return false; // Role already exists
-         * }
-         */
         catch (Exception e) {
             e.printStackTrace();
-
+            
         }
-
+        return true;
     }
 
     /*
@@ -100,6 +99,6 @@ public class Database {
     public static void main(String[] args) {
         Connection conn = Database.createConn();
         // Database.addUser(conn, "Senior developer", "6 years");
-        Database.updateConn(conn, 2, "Super Senior developer", "9 years");
+        Database.updateConn(conn, 5, "Super Senior developer", "19 years");
     }
 }
