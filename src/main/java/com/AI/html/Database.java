@@ -6,10 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
-
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 
 public class Database {
@@ -32,22 +29,23 @@ public class Database {
         }
     }
 
-        public static boolean create(Connection conn, String table, String columns, List<String> columnList) {
+    public static boolean create(Connection conn, String table, String columns, List<String> columnList) {
         if (conn == null || table == null || table.isEmpty()) {
             System.out.println("Connection is null or table name is invalid.");
             return false;
         }
         try (Connection connection = conn) {
             String placeHolders = "";
-            for (int i = 1; i <= columnList.size(); i ++) {
+            for (int i = 1; i <= columnList.size(); i++) {
                 if (i == columnList.size()) {
                     placeHolders += "?";
                     break;
                 }
                 placeHolders += "?,";
             }
-            PreparedStatement ps = conn.prepareStatement("INSERT INTO " + table + " (" + columns + ") VALUES (" + placeHolders + ")");
-            for (int i = 0; i < columnList.size(); i ++) {
+            PreparedStatement ps = conn
+                    .prepareStatement("INSERT INTO " + table + " (" + columns + ") VALUES (" + placeHolders + ")");
+            for (int i = 0; i < columnList.size(); i++) {
                 ps.setString(i + 1, columnList.get(i));
             }
             int rowsAffected = ps.executeUpdate();
@@ -99,9 +97,10 @@ public class Database {
 
     public static ResultSet getAll(Connection conn, String table) {
         ResultSet rs = null;
-        try  {
+        try {
             PreparedStatement ps = conn.prepareStatement("SELECT * FROM " + table);
-            // PreparedStatement ps = conn.prepareStatement("SELECT * FROM user WHERE email=? AND password=?");
+            // PreparedStatement ps = conn.prepareStatement("SELECT * FROM user WHERE
+            // email=? AND password=?");
             rs = ps.executeQuery();
         } catch (Exception e) {
             e.printStackTrace();
@@ -111,13 +110,13 @@ public class Database {
 
     public static ResultSet get(Connection conn, String table, String where) {
         ResultSet rs = null;
-        try  {
+        try {
             String query = "SELECT * FROM " + table + " WHERE " + where;
             PreparedStatement ps = conn.prepareStatement(query);
             rs = ps.executeQuery();
-         } catch (Exception e) {
-             e.printStackTrace();
-         }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return rs;
     }
 
@@ -130,32 +129,32 @@ public class Database {
         /*
          * Create a new record in the database
          */
-        Database.create(conn, table, "role,exp", columnList);
-
+        // Database.create(conn, table, "role,exp", columnList);5
 
         conn = Database.connectDB();
-        // Database.update(conn, 2, "Super Senior developer", "190 years");
+        // Database.update(conn, 22, "Super Senior developer", "190 years");
 
         conn = Database.connectDB();
         /*
          * Retrieve all records from the table
          */
-        ResultSet list = Database.getAll(conn, table);
+        // ResultSet list = Database.getAll(conn, table);
 
         /*
          * Retrieve records from the table based on condition
          */
         // String condition = "id='2'";
-        String condition = "id IN (2,3)";
-        // ResultSet list = Database.get(conn, table, condition);
+        String condition = "id IN (4,5)";
+        ResultSet list = Database.get(conn, table, condition);
         try {
             while (list.next()) {
-                System.out.println("ID: " + list.getInt("id") + ", Role: " + list.getString("role") + ", Exp: " + list.getString("exp"));
+                System.out.println("ID: " + list.getInt("id") + ", Role: " + list.getString("role") + ", Exp: "
+                        + list.getString("exp"));
             }
-        }  catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        
-        // Database.delete(conn, 2);
+
+        // Database.delete(conn, 24);
     }
 }
