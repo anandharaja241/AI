@@ -1,5 +1,7 @@
 package com.AI.html;
 
+import java.sql.ResultSet;
+
 import javafx.scene.web.WebEngine;
 import javafx.stage.Stage;
 
@@ -13,25 +15,100 @@ public class JsBackendAction {
         this.engine = webEngine;
     }
 
-    public void sayHello() {
-        System.out.println("Button clicked in HTML! Logic running in Java.");
-    }
+    // public void sayHello() {
+    //     System.out.println("Button clicked in HTML! Logic running in Java.");
+    // }
 
-    public void exitApp() {
-        System.out.println("Exiting...");
-        System.exit(0);
-    }
+    // public void exitApp() {
+    //     System.out.println("Exiting...");
+    //     System.exit(0);
+    // }
 
-    public void triggerAction(String actionName) {
-        System.out.println("Java triggered action: " + actionName);
-    }
+    // public void triggerAction(String actionName) {
+    //     System.out.println("Java triggered action: " + actionName);
+    // }
 
-    public void loadAnalytics() {
-        System.out.println("Loading analytics module...");
-    }
+    // public void loadAnalytics() {
+    //     System.out.println("Loading analytics module...");
+    // }
 
     public void navigateTo(String template) {
         Demo demo = new Demo();
         demo.navigateTo(template, this.webStage, this.engine);
+    }
+
+    public int createJobs(String role, String exp) {
+        try {
+            var conn = Database.connectDB();
+            var columns = "role,exp";
+            var columnList = new java.util.ArrayList<String>();
+            columnList.add(role);
+            columnList.add(exp);
+            int status = Database.create(conn, "jobs", columns, columnList);
+            if (status > 0) {
+                System.out.println("Job created: " + role + ", " + exp);
+                return status; // Success
+            } else {
+                System.out.println("Job Failed: " + role + ", " + exp);
+                return status; // Failure
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return -1; // Error
+        }
+    }
+
+    public String listJobs() {
+        try {
+            var conn = Database.connectDB();
+            ResultSet list = Database.getAll(conn, "jobs");
+            StringBuilder sb = new StringBuilder();
+            String role, exp, id, created;
+            int index = 1;
+            while (list.next()) {
+                role = list.getString("role");
+                exp = list.getString("exp");
+                created = list.getString("createDate");
+                // id = role +"-"+ exp;
+                id = list.getString("id");
+                sb.append("<tr>\n" + //
+                        "    <td><strong>"+(index++)+"</strong></td>\n" + //
+                        "    <td><strong>"+id+"</strong></td>\n" + //
+                        "    <td>"+role+"</td>\n" + //
+                        "    <td>"+exp+"</td>\n" + //
+                        "    <td>"+created+"</td>\n" + //
+                        "    <td class=\"text-center\">\n" + //
+                        "        <button class=\"btn btn-outline-info btn-sm edit-btn me-1 nav-btn\" data-id=\""+id+"\" data-href=\"edit-job\"><i\n" + //
+                        "                class=\"bi bi-pencil\"></i></button>\n" + //
+                        "        <button class=\"btn btn-outline-danger delete-btn btn-sm nav-btn\" data-id=\""+id+"\"><i class=\"bi bi-trash\"></i></button>\n" + //
+                        "    </td>\n" + //
+                        "</tr>");
+                // sb.append("Role: ").append(list.getString("role")).append(", Experience: ").append(list.getString("exp")).append("\n");
+            }
+
+            if (sb.length() == 0) {
+                return "<tr><td colspan='6' class='text-center'>No jobs found.</td></tr>";
+            }
+            return sb.toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Error retrieving jobs.";
+        }
+    }
+
+    public Boolean deleteJobs(String id) {
+        try {
+            var conn = Database.connectDB();
+            boolean success = Database.delete(conn, id);
+            if (success) {
+                System.out.println("Jobs deleted: " + id);
+            } else {
+                System.out.println("Job Deletion Failed: " + id);
+            }
+            return success;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }

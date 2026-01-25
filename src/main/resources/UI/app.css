@@ -41,6 +41,16 @@ body {
     min-height: 100vh;
 }
 
+.status {
+    font-weight: 700;
+    display: none;
+}
+
+.status.text-danger,
+.status.text-success {
+    display: block;
+}
+
 /* END: Common CSS*/
 
 

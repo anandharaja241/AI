@@ -14,14 +14,16 @@
     <nav class="navbar navbar-expand-lg navbar-white bg-white sticky-top px-20">
         <ul class="nav gap-2">
             <li class="nav-item">
-                <button class="nav-link nav-btn rounded" href="#" data-href="dashboard"><i class="bi bi-house-door me-2"></i> Dashboard</button>
+                <button class="nav-link nav-btn rounded" href="#" data-href="dashboard"><i
+                        class="bi bi-house-door me-2"></i> Dashboard</button>
             </li>
             <li class="nav-item">
                 <button class="nav-link nav-btn active rounded" href="#" data-href="list-job"><i
                         class="bi bi-graph-up me-2"></i> Jobs list</button>
             </li>
             <li class="nav-item">
-                <button class="nav-link nav-btn rounded" href="#" data-href="resume-analyzer"><i class="bi bi-layers me-2"></i> Resume Analyzer</button>
+                <button class="nav-link nav-btn rounded" href="#" data-href="resume-analyzer"><i
+                        class="bi bi-layers me-2"></i> Resume Analyzer</button>
             </li>
         </ul>
     </nav>
@@ -32,11 +34,6 @@
         </div>
         <div class="card-body p-4">
             <form id="jobForm">
-                <div class="mb-3">
-                    <label for="jobLabel" class="form-label fw-bold">Job Label</label>
-                    <input type="text" class="form-control" id="jobLabel" placeholder="e.g. Senior Backend Engineer"
-                        readonly required>
-                </div>
 
                 <div class="mb-3">
                     <label for="role" class="form-label fw-bold">Role</label>
@@ -59,24 +56,13 @@
                         <option value="lead">Lead / Architect (10+ years)</option>
                     </select>
                 </div>
-
-                <div class="mb-4">
-                    <label for="status" class="form-label fw-bold">Status</label>
-                    <select class="form-select" id="status" required>
-                        <option value="" selected disabled>Select Status</option>
-                        <option value="1">Active</option>
-                        <option value="0">De-Active</option>
-                    </select>
-                </div>
-                <option value="lead">Lead / Architect (10+ years)</option>
-                </select>
         </div>
 
         <div class="mb-4 d-grid1 text-center">
-            <button type="button" class="btn btn-primary btn-lg" onclick="submitToJava()">
+            <button type="button" class="btn btn-primary update-btn btn-lg">
                 <i class="bi bi-check-lg me-2"></i>Update Job
             </button>
-            <button type="button" class="btn btn-primary btn-lg nav-btn create-btn" data-href="list-job">
+            <button type="button" class="btn btn-primary btn-lg nav-btn" data-href="list-job">
                 <i class="bi bi-arrow-left me-2"></i>Back
             </button>
         </div>

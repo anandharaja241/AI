@@ -31,11 +31,6 @@
         <div class="card-body p-4">
             <form id="jobForm">
                 <div class="mb-3">
-                    <label for="jobLabel" class="form-label fw-bold">Job Label</label>
-                    <input type="text" class="form-control" id="jobLabel" placeholder="e.g. Senior Backend Engineer" required>
-                </div>
-
-                <div class="mb-3">
                     <label for="role" class="form-label fw-bold">Role</label>
                     <select class="form-select" id="role" required>
                         <option value="" selected disabled>Select Role Type</option>
@@ -57,32 +52,16 @@
                     </select>
                 </div>
 
+                <div class="mb-4">
+                    <span class="status"></span>
+                </div>
+
                 <div class="mb-4 d-grid1 text-center">
-                    <button type="button" class="btn btn-primary btn-lg create-btn" onclick="processAndRedirect()">
+                    <button type="button" class="btn btn-primary btn-lg create-btn">
                         <i class="bi bi-check-lg me-2"></i>Create Job
                     </button>
-                    <script>
-                        function processAndRedirect() {
-                            // 1. Get text
-                            const textData = document.getElementById("jobLabel");
 
-                            // 2. Send to Backend (Example)
-                            /* fetch('/api/save-data', {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ text: textData })
-                            }); */
-
-                            // 3. Redirect to next page
-
-                            window.location.href = "list-job.html";
-                        }
-
-
-
-                    </script>
-
-                    <button type="button" class="btn btn-primary btn-lg nav-btn create-btn" data-href="list-job">
+                    <button type="button" class="btn btn-primary btn-lg nav-btn" data-href="list-job">
                         <i class="bi bi-arrow-left me-2"></i>Back
                     </button>
                 </div>

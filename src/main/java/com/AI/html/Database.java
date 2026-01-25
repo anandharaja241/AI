@@ -1,13 +1,19 @@
 package com.AI.html;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.ZoneId;
 
 public class Database {
     static final String URL = "jdbc:mysql://localhost:3306/demo";
@@ -29,35 +35,36 @@ public class Database {
         }
     }
 
-    public static boolean create(Connection conn, String table, String columns, List<String> columnList) {
+    public static int create(Connection conn, String table, String columns, List<String> columnList) {
         if (conn == null || table == null || table.isEmpty()) {
             System.out.println("Connection is null or table name is invalid.");
-            return false;
+            return 0;
         }
         try (Connection connection = conn) {
             String placeHolders = "";
             for (int i = 1; i <= columnList.size(); i++) {
-                if (i == columnList.size()) {
-                    placeHolders += "?";
-                    break;
-                }
+                // if (i == columnList.size()) {
+                //     placeHolders += "?";
+                //     break;
+                // }
                 placeHolders += "?,";
             }
             PreparedStatement ps = conn
-                    .prepareStatement("INSERT INTO " + table + " (" + columns + ") VALUES (" + placeHolders + ")");
+                    .prepareStatement("INSERT INTO " + table + " (" + columns + ", createDate) VALUES (" + placeHolders + "?)");
             for (int i = 0; i < columnList.size(); i++) {
                 ps.setString(i + 1, columnList.get(i));
             }
+            ps.setString(columnList.size() + 1, getIndianDate());
             int rowsAffected = ps.executeUpdate();
             System.out.println(rowsAffected + " record(s) added.");
 
-            return true;
+            return 1;
         } catch (SQLIntegrityConstraintViolationException e) {
             System.out.println("Record already exists: " + e.getMessage());
-            return false;
+            return -1;
         } catch (Exception e) {
             e.printStackTrace();
-            return false;
+            return -1;
         }
     }
 
@@ -81,12 +88,11 @@ public class Database {
         return true;
     }
 
-    public static boolean delete(Connection conn, int id) {
+    public static boolean delete(Connection conn, String ids) {
         try (Connection connection = conn) {
-            PreparedStatement ps = conn.prepareStatement("Delete from jobs where id=?");
-            ps.setInt(1, id);
-
-            ps.executeUpdate();
+            String sql = "DELETE FROM jobs WHERE id IN (" + ids + ")"; 
+            Statement stmt = conn.createStatement();
+            stmt.executeUpdate(sql);
             System.out.println("Delete");
             return true;
         } catch (Exception e) {
@@ -131,30 +137,38 @@ public class Database {
          */
         // Database.create(conn, table, "role,exp", columnList);5
 
-        conn = Database.connectDB();
+        // conn = Database.connectDB();
         // Database.update(conn, 22, "Super Senior developer", "190 years");
 
-        conn = Database.connectDB();
+        // conn = Database.connectDB();
         /*
          * Retrieve all records from the table
          */
-        // ResultSet list = Database.getAll(conn, table);
+        ResultSet list = Database.getAll(conn, table);
 
         /*
          * Retrieve records from the table based on condition
          */
         // String condition = "id='2'";
-        String condition = "id IN (4,5)";
-        ResultSet list = Database.get(conn, table, condition);
-        try {
-            while (list.next()) {
-                System.out.println("ID: " + list.getInt("id") + ", Role: " + list.getString("role") + ", Exp: "
-                        + list.getString("exp"));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        // String condition = "id IN (4,5)";
+        // ResultSet list = Database.get(conn, table, condition);
+        // try {
+        //     while (list.next()) {
+        //         System.out.println("ID: " + list.getInt("id") + ", Role: " + list.getString("role") + ", Exp: "
+        //                 + list.getString("exp"));
+        //     }
+        // } catch (Exception e) {
+        //     e.printStackTrace();
+        // }
 
-        // Database.delete(conn, 24);
+        // Database.delete(conn, "3,4,5,6,7,8,9,21,22,25,26,27,28.29");
+    }
+
+    public static String getIndianDate() {
+        ZonedDateTime istTime = ZonedDateTime.now(ZoneId.of("Asia/Kolkata"));
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss a");
+        String formattedTime = istTime.format(formatter);
+        return formattedTime;
     }
 }
