@@ -118,6 +118,25 @@ public class JsBackendAction {
         }
     }
 
+    public String getJobOptions() {
+        try {
+            var conn = Database.connectDB();
+            ResultSet list = Database.getAll(conn, "jobs");
+            StringBuilder sb = new StringBuilder();
+            String role, exp, id, template;
+            while (list.next()) {
+                role = list.getString("role");
+                exp = list.getString("exp");
+                id = list.getString("id");
+                template = "<option value=\"" + id + "\">" + id + " " + role + " - " + exp + "</option>\n";
+                sb.append(template);
+            }
+            return sb.toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
     public String getJobById(String id) {
         try {
             var conn = Database.connectDB();
@@ -150,5 +169,15 @@ public class JsBackendAction {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public String loadHistory() {
+        ResumeAnalyzer analyzer = new ResumeAnalyzer();
+        return analyzer.getResults();
+    }
+
+    public String getHistoryDetails(String id) {
+        ResumeAnalyzer analyzer = new ResumeAnalyzer();
+        return analyzer.getHistoryDetails(id);
     }
 }

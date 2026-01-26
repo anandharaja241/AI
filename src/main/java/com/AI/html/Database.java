@@ -26,7 +26,7 @@ public class Database {
         final String PASS = "testpass";
         try {
             Connection conn = DriverManager.getConnection(URL, USER, PASS);
-            System.out.println("Connection established successfully.");
+            // System.out.println("Connection established successfully.");
             // conn.close();
             return conn;
         } catch (Exception e) {
@@ -104,7 +104,7 @@ public class Database {
     public static ResultSet getAll(Connection conn, String table) {
         ResultSet rs = null;
         try {
-            PreparedStatement ps = conn.prepareStatement("SELECT * FROM " + table);
+            PreparedStatement ps = conn.prepareStatement("SELECT * FROM " + table + " order by id desc");
             // PreparedStatement ps = conn.prepareStatement("SELECT * FROM user WHERE
             // email=? AND password=?");
             rs = ps.executeQuery();
@@ -144,22 +144,23 @@ public class Database {
         /*
          * Retrieve all records from the table
          */
-        ResultSet list = Database.getAll(conn, table);
+        // ResultSet list = Database.getAll(conn, table);
 
         /*
          * Retrieve records from the table based on condition
          */
-        // String condition = "id='2'";
+        String condition = "id != ''";
         // String condition = "id IN (4,5)";
-        // ResultSet list = Database.get(conn, table, condition);
-        // try {
-        //     while (list.next()) {
-        //         System.out.println("ID: " + list.getInt("id") + ", Role: " + list.getString("role") + ", Exp: "
-        //                 + list.getString("exp"));
-        //     }
-        // } catch (Exception e) {
-        //     e.printStackTrace();
-        // }
+        ResultSet list = Database.get(conn, table, condition);
+        try {
+            while (list.next()) {
+                System.out.println(list.getInt("id") + "  " + list.getString("role") + "-" + list.getString("exp"));
+                // System.out.println("ID: " + list.getInt("id") + ", Role: " + list.getString("role") + ", Exp: "
+                //         + list.getString("exp"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         // Database.delete(conn, "3,4,5,6,7,8,9,21,22,25,26,27,28.29");
     }

@@ -31,7 +31,7 @@ public class Demo extends Application {
         // Set to maximized
         stage.setMaximized(true);
 
-        stage.setTitle("AI Resume Analyzer");
+        stage.setTitle("AI Smart Resume Analyzer");
         stage.show();
     }
 

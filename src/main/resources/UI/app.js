@@ -4,6 +4,7 @@ var options = options || {};
 $(function () {
     // Initial Events
     // setActiveNavButton(javaBackend.currentPage);
+    $('#jobRole').html(javaBackend.getJobOptions());
 
     // Event handlers
     $('body').on('click', '.nav-btn', navigateTo);
