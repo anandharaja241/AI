@@ -68,24 +68,24 @@ public class Database {
         }
     }
 
-    public static boolean update(Connection conn, int id, String role, String exp) {
+    public static int update(Connection conn, String id, String role, String exp) {
         try (Connection connection = conn) {
             PreparedStatement ps = conn.prepareStatement("UPDATE jobs SET role = ?, exp=? WHERE id = ?");
             ps.setString(1, role);
             ps.setString(2, exp);
-            ps.setInt(3, id);
+            ps.setString(3, id);
             int rowsaffect = ps.executeUpdate();
 
             System.out.println(rowsaffect + " Updated");
+            return 1;
 
         } catch (SQLException e) {
             System.out.println("Role already exists: ");
-            return false; // Role already existst
+            return -1; // Role already exists
         } catch (Exception e) {
             e.printStackTrace();
-
+            return -1;
         }
-        return true;
     }
 
     public static boolean delete(Connection conn, String ids) {

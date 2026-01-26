@@ -58,6 +58,28 @@ public class JsBackendAction {
         }
     }
 
+    public int updateJobs(String id, String role, String exp) {
+        try {
+            var conn = Database.connectDB();
+            // var columns = "role=?, exp=?";
+            // var columnList = new java.util.ArrayList<String>();
+            // columnList.add(role);
+            // columnList.add(exp);
+            String condition = "id='" + id + "'";
+            int status = Database.update(conn, id, role, exp);
+            if (status > 0) {
+                System.out.println("Job updated: " + id + ", " + role + ", " + exp);
+                return status; // Success
+            } else {
+                System.out.println("Job Update Failed: " + id + ", " + role + ", " + exp);
+                return status; // Failure
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return -1; // Error
+        }
+    }
+
     public String listJobs() {
         try {
             var conn = Database.connectDB();
@@ -78,7 +100,7 @@ public class JsBackendAction {
                         "    <td>"+exp+"</td>\n" + //
                         "    <td>"+created+"</td>\n" + //
                         "    <td class=\"text-center\">\n" + //
-                        "        <button class=\"btn btn-outline-info btn-sm edit-btn me-1 nav-btn\" data-id=\""+id+"\" data-href=\"edit-job\"><i\n" + //
+                        "        <button class=\"btn btn-outline-info btn-sm edit-nav-btn me-1 nav-btn\" data-id=\""+id+"\" data-href=\"edit-job\"><i\n" + //
                         "                class=\"bi bi-pencil\"></i></button>\n" + //
                         "        <button class=\"btn btn-outline-danger delete-btn btn-sm nav-btn\" data-id=\""+id+"\"><i class=\"bi bi-trash\"></i></button>\n" + //
                         "    </td>\n" + //
@@ -93,6 +115,24 @@ public class JsBackendAction {
         } catch (Exception e) {
             e.printStackTrace();
             return "Error retrieving jobs.";
+        }
+    }
+
+    public String getJobById(String id) {
+        try {
+            var conn = Database.connectDB();
+            String condition = "id='" + id + "'";
+            ResultSet rs = Database.get(conn, "jobs", condition);
+            if (rs.next()) {
+                String role = rs.getString("role");
+                String exp = rs.getString("exp");
+                return role + ";;" + exp; // Using ';;' as a delimiter
+            } else {
+                return "";
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "";
         }
     }
 

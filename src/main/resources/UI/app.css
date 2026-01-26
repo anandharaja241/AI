@@ -67,3 +67,35 @@ body {
 }
 
 /* END: list page CSS */
+
+/* START: Resume-analyzer page CSS */
+.resume-analyzer .sticky-tab {
+    position: sticky;
+    top: 20px;
+}
+
+.resume-analyzer .score-badge {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.resume-analyzer .resume-card {
+    transition: transform 0.2s;
+    border-left: 5px solid #0d6efd;
+}
+
+.resume-analyzer .resume-card:hover {
+    transform: scale(1.02);
+}
+
+.resume-analyzer .history-item {
+    cursor: pointer;
+    border-bottom: 1px solid #dee2e6;
+    padding: 10px;
+}
+
+.resume-analyzer .history-item:hover {
+    background-color: #e9ecef;
+}
+
+/* END: Resume-analyzer page CSS */
