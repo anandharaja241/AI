@@ -19,6 +19,7 @@ public class Database {
     static final String URL = "jdbc:mysql://localhost:3306/demo";
     static final String USER = "root";
     static final String PASS = "";
+    public static String lastCreatedDate = "";
 
     public static Connection connectDB() {
         final String URL = "jdbc:sqlite:app.db";
@@ -41,20 +42,18 @@ public class Database {
             return 0;
         }
         try (Connection connection = conn) {
-            String placeHolders = "";
+            String placeHolders = "", lastCreatedDate = "";
             for (int i = 1; i <= columnList.size(); i++) {
-                // if (i == columnList.size()) {
-                //     placeHolders += "?";
-                //     break;
-                // }
                 placeHolders += "?,";
             }
             PreparedStatement ps = conn
-                    .prepareStatement("INSERT INTO " + table + " (" + columns + ", createDate) VALUES (" + placeHolders + "?)");
+                    .prepareStatement(
+                            "INSERT INTO " + table + " (" + columns + ", createDate) VALUES (" + placeHolders + "?)");
             for (int i = 0; i < columnList.size(); i++) {
                 ps.setString(i + 1, columnList.get(i));
             }
-            ps.setString(columnList.size() + 1, getIndianDate());
+            lastCreatedDate = getIndianDate();
+            ps.setString(columnList.size() + 1, lastCreatedDate);
             int rowsAffected = ps.executeUpdate();
             System.out.println(rowsAffected + " record(s) added.");
 
@@ -65,6 +64,37 @@ public class Database {
         } catch (Exception e) {
             e.printStackTrace();
             return -1;
+        }
+    }
+
+    public static String createAndReturnDate(Connection conn, String table, String columns, List<String> columnList) {
+        if (conn == null || table == null || table.isEmpty()) {
+            System.out.println("Connection is null or table name is invalid.");
+            return "0";
+        }
+        try (Connection connection = conn) {
+            String placeHolders = "", lastCreatedDate = "";
+            for (int i = 1; i <= columnList.size(); i++) {
+                placeHolders += "?,";
+            }
+            PreparedStatement ps = conn
+                    .prepareStatement(
+                            "INSERT INTO " + table + " (" + columns + ", createDate) VALUES (" + placeHolders + "?)");
+            for (int i = 0; i < columnList.size(); i++) {
+                ps.setString(i + 1, columnList.get(i));
+            }
+            lastCreatedDate = getIndianDate();
+            ps.setString(columnList.size() + 1, lastCreatedDate);
+            int rowsAffected = ps.executeUpdate();
+            System.out.println(rowsAffected + " record(s) added.");
+
+            return lastCreatedDate;
+        } catch (SQLIntegrityConstraintViolationException e) {
+            System.out.println("Record already exists: " + e.getMessage());
+            return "-1";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "-1";
         }
     }
 
@@ -90,7 +120,7 @@ public class Database {
 
     public static boolean delete(Connection conn, String ids) {
         try (Connection connection = conn) {
-            String sql = "DELETE FROM jobs WHERE id IN (" + ids + ")"; 
+            String sql = "DELETE FROM jobs WHERE id IN (" + ids + ")";
             Statement stmt = conn.createStatement();
             stmt.executeUpdate(sql);
             System.out.println("Delete");
@@ -155,8 +185,6 @@ public class Database {
         try {
             while (list.next()) {
                 System.out.println(list.getInt("id") + "  " + list.getString("role") + "-" + list.getString("exp"));
-                // System.out.println("ID: " + list.getInt("id") + ", Role: " + list.getString("role") + ", Exp: "
-                //         + list.getString("exp"));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -168,7 +196,7 @@ public class Database {
     public static String getIndianDate() {
         ZonedDateTime istTime = ZonedDateTime.now(ZoneId.of("Asia/Kolkata"));
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss a");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm:ss a");
         String formattedTime = istTime.format(formatter);
         return formattedTime;
     }

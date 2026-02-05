@@ -2,6 +2,7 @@ package com.AI.html;
 
 import java.sql.ResultSet;
 
+import javafx.application.Platform;
 import javafx.scene.web.WebEngine;
 import javafx.stage.Stage;
 
@@ -10,31 +11,14 @@ public class JsBackendAction {
     private Stage webStage;
     private WebEngine engine;
 
-    public JsBackendAction (Stage stage, WebEngine webEngine) {
+    public JsBackendAction(Stage stage, WebEngine webEngine) {
         this.webStage = stage;
         this.engine = webEngine;
     }
 
-    // public void sayHello() {
-    //     System.out.println("Button clicked in HTML! Logic running in Java.");
-    // }
-
-    // public void exitApp() {
-    //     System.out.println("Exiting...");
-    //     System.exit(0);
-    // }
-
-    // public void triggerAction(String actionName) {
-    //     System.out.println("Java triggered action: " + actionName);
-    // }
-
-    // public void loadAnalytics() {
-    //     System.out.println("Loading analytics module...");
-    // }
-
     public void navigateTo(String template) {
-        Demo demo = new Demo();
-        demo.navigateTo(template, this.webStage, this.engine);
+        ResumeAnalyzer analyzer = new ResumeAnalyzer();
+        analyzer.navigateTo(template, this.webStage, this.engine);
     }
 
     public int createJobs(String role, String exp) {
@@ -61,11 +45,6 @@ public class JsBackendAction {
     public int updateJobs(String id, String role, String exp) {
         try {
             var conn = Database.connectDB();
-            // var columns = "role=?, exp=?";
-            // var columnList = new java.util.ArrayList<String>();
-            // columnList.add(role);
-            // columnList.add(exp);
-            String condition = "id='" + id + "'";
             int status = Database.update(conn, id, role, exp);
             if (status > 0) {
                 System.out.println("Job updated: " + id + ", " + role + ", " + exp);
@@ -94,18 +73,21 @@ public class JsBackendAction {
                 // id = role +"-"+ exp;
                 id = list.getString("id");
                 sb.append("<tr>\n" + //
-                        "    <td><strong>"+(index++)+"</strong></td>\n" + //
-                        "    <td><strong>"+id+"</strong></td>\n" + //
-                        "    <td>"+role+"</td>\n" + //
-                        "    <td>"+exp+"</td>\n" + //
-                        "    <td>"+created+"</td>\n" + //
+                        "    <td><strong>" + (index++) + "</strong></td>\n" + //
+                        "    <td><strong>" + id + "</strong></td>\n" + //
+                        "    <td>" + role + "</td>\n" + //
+                        "    <td>" + exp + "</td>\n" + //
+                        "    <td>" + created + "</td>\n" + //
                         "    <td class=\"text-center\">\n" + //
-                        "        <button class=\"btn btn-outline-info btn-sm edit-nav-btn me-1 nav-btn\" data-id=\""+id+"\" data-href=\"edit-job\"><i\n" + //
+                        "        <button class=\"btn btn-outline-info btn-sm edit-nav-btn me-1 nav-btn\" data-id=\""
+                        + id + "\" data-href=\"edit-job\"><i\n" + //
                         "                class=\"bi bi-pencil\"></i></button>\n" + //
-                        "        <button class=\"btn btn-outline-danger delete-btn btn-sm nav-btn\" data-id=\""+id+"\"><i class=\"bi bi-trash\"></i></button>\n" + //
+                        "        <button class=\"btn btn-outline-danger delete-btn btn-sm nav-btn\" data-id=\"" + id
+                        + "\"><i class=\"bi bi-trash\"></i></button>\n" + //
                         "    </td>\n" + //
                         "</tr>");
-                // sb.append("Role: ").append(list.getString("role")).append(", Experience: ").append(list.getString("exp")).append("\n");
+                // sb.append("Role: ").append(list.getString("role")).append(", Experience:
+                // ").append(list.getString("exp")).append("\n");
             }
 
             if (sb.length() == 0) {
@@ -137,6 +119,7 @@ public class JsBackendAction {
             return "";
         }
     }
+
     public String getJobById(String id) {
         try {
             var conn = Database.connectDB();
@@ -172,12 +155,14 @@ public class JsBackendAction {
     }
 
     public String loadHistory() {
-        ResumeAnalyzer analyzer = new ResumeAnalyzer();
-        return analyzer.getResults();
+        return AiAnalyzer.getResults();
     }
 
     public String getHistoryDetails(String id) {
-        ResumeAnalyzer analyzer = new ResumeAnalyzer();
-        return analyzer.getHistoryDetails(id);
+        return AiAnalyzer.getHistoryDetails(id);
+    }
+
+    public String processWithAI(String fileName, String base64Data, String role) {
+        return AiAnalyzer.processWithAI(fileName, base64Data, role);
     }
 }

@@ -1,64 +1,57 @@
 $(document).ready(function () {
-    $('#btnAnalyze').click(function () {
-        const files = $('#resumeUpload')[0].files;
-        const role = $("#jobRole option:selected").text();
-
-        if (files.length === 0) {
-            alert("Please select at least one resume.");
-            return;
-        }
-
-        // Show loading state
-        $('#resultsArea').addClass('d-none');
-        $('#loading').removeClass('d-none');
-
-        // Simulate AI Delay
-        setTimeout(function () {
-            $('#loading').addClass('d-none');
-            $('#resultsArea').removeClass('d-none').html('');
-
-            // Mock Result Generation
-            for (let i = 0; i < files.length; i++) {
-                const randomScore = Math.floor(Math.random() * (98 - 45 + 1)) + 45;
-                const color = randomScore > 80 ? 'success' : (randomScore > 60 ? 'warning' : 'danger');
-
-                const html = `
-                        <div class="card resume-card shadow-sm mb-3">
-                            <div class="card-body d-flex justify-content-between align-items-center">
-                                <div>
-                                    <h5 class="mb-1 text-primary">${files[i].name}</h5>
-                                    <p class="mb-0 text-muted"><i class="bi bi-briefcase me-1"></i> Match for: ${role}</p>
-                                    <small class="text-secondary">Extracted Skills: Java, Spring Boot, Microservices</small>
-                                </div>
-                                <div class="text-center">
-                                    <div class="text-${color} score-badge">${randomScore}%</div>
-                                    <small class="text-uppercase fw-bold">Match</small>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                $('#resultsArea').append(html);
-            }
-
-            // Add to history
-            const now = new Date().toLocaleString();
-            $('#historyList').prepend(`
-                    <div class="history-item">
-                        <small class="text-muted">${now}</small>
-                        <div class="fw-bold">${role} Batch</div>
-                        <small>${files.length} Resumes Analyzed</small>
-                    </div>
-                `);
-
-        }, 1500);
-    });
-
-    $('#historyList').html(javaBackend.loadHistory());
+    $('body').on('click', '#btnAnalyze', analyzeResume);
     $('body').on('click', '.history-item', loadHistoryDetails);
+
+    var initialHistory = javaBackend.loadHistory();
+    if (initialHistory != "") {
+        $('#historyList').html(initialHistory);
+    }
 });
 
+// Inside your "Analyze" button click handler
+function analyzeResume() {
+    const fileInput = document.getElementById('resumeUpload');
+    const role = document.getElementById('jobRole').value;
+    const file = fileInput.files[0];
+
+    $('body').append("Role:" + role, " File:" + file.name);
+
+    if (fileInput.files.length < 1) {
+        // FIXME: Use better UI feedback
+        $('body').append("Please select at least one resume.");
+        return;
+    }
+
+    // Show loading state
+    $('#resultsArea').addClass('d-none');
+    $('#loading').removeClass('d-none');
+
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            const base64Data = e.target.result.split(',')[1]; // Get data after the comma
+            const filePath = file.name;
+            const filePathParts = filePath.split('/');
+            const fileName = filePathParts.pop();
+
+            // Send to Java via Bridge
+            var resultHtml = javaBackend.processWithAI(fileName, base64Data, role);
+            $('#loading').addClass('d-none');
+            $('#resultsArea').removeClass('d-none').html(resultHtml);
+            // Refresh history
+            var history = javaBackend.loadHistory();
+            if (history != "") {
+                $('#historyList').html(history);
+            }
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
 function loadHistoryDetails(evt) {
-    const jobId = $(evt.currentTarget).data('id');
+    $('.history-item').removeClass('active');
+    var $parent = $(evt.currentTarget);
+    const jobId = $(evt.currentTarget).addClass('active').data('id');
     const details = javaBackend.getHistoryDetails(jobId);
     $('#resultsArea').html(details);
 }

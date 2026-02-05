@@ -94,8 +94,12 @@ body {
     padding: 10px;
 }
 
-.resume-analyzer .history-item:hover {
+.resume-analyzer .history-item:hover, .resume-analyzer .history-item.active {
     background-color: #e9ecef;
 }
 
+#historyList {
+    max-height: 560px;
+    overflow-y: auto;
+}
 /* END: Resume-analyzer page CSS */

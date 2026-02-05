@@ -3,23 +3,27 @@ var options = options || {};
 
 $(function () {
     // Initial Events
-    // setActiveNavButton(javaBackend.currentPage);
     $('#jobRole').html(javaBackend.getJobOptions());
 
     // Event handlers
     $('body').on('click', '.nav-btn', navigateTo);
-    $('.create-btn').on('click', processCreateJob);
+    $('body').on('click', '.create-btn', processCreateJob);
     $('body').on('click', '.edit-nav-btn', setJobId);
-    $('.update-btn').on('click', processUpdateJob);
+    $('body').on('click', '.update-btn', processUpdateJob);
     $('body').on('click', '.delete-btn', processDeleteJob);
 
 
+    $('body').append("Status: UI is ready.");
+    if (!javaBackend.navigateTo) {
+        $('body').append("Status: Backend navigateTo function not found.<br>");
+    }
     if (!javaBackend['createJobs']) {
-        $('body').append("Status: Backend createJobs function not found.");
+        $('body').append("Status: Backend createJobs function not found.<br>");
     }
 });
 
 function navigateTo(evt) {
+    $('body').append("Navigating to: " + evt.currentTarget.dataset.href + "<br>");
     javaBackend.navigateTo && javaBackend.navigateTo(evt.currentTarget.dataset.href);
 }
 
