@@ -12,16 +12,25 @@ body {
     border: 2px inset rgb(13, 110, 253);
 }
 
+.container {
+    border-radius: 20px;
+}
+
 .form-card {
     max-width: 600px;
     margin: auto;
     border: none;
     box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+    border-radius: 20px;
 }
 
 .card {
     border: none;
     box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.mt-10 {
+    margin-top: 10vh;
 }
 
 .mt-20 {
@@ -34,9 +43,6 @@ body {
 }
 
 .app-bg-img {
-    /* background-image: url('https://img.freepik.com/free-vector/background-with-black-lines_1051-1040.jpg?semt=ais_hybrid&w=1040&q=80');
-    background-size: cover;
-    background-position: center; */
     background: linear-gradient(rgba(0, 0, 0, 0.76), rgba(223, 55, 78, 0.28)), linear-gradient(white, white);
     min-height: 100vh;
 }
@@ -103,3 +109,11 @@ body {
     overflow-y: auto;
 }
 /* END: Resume-analyzer page CSS */
+
+/* START: Add/Edit Job Description page CSS */
+.role-input, .exp-input {
+    width: 70% !important;
+    height: 40px !important;
+}
+
+/* END: Add/Edit Job Description page CSS */

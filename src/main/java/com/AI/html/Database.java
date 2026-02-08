@@ -135,8 +135,6 @@ public class Database {
         ResultSet rs = null;
         try {
             PreparedStatement ps = conn.prepareStatement("SELECT * FROM " + table + " order by id desc");
-            // PreparedStatement ps = conn.prepareStatement("SELECT * FROM user WHERE
-            // email=? AND password=?");
             rs = ps.executeQuery();
         } catch (Exception e) {
             e.printStackTrace();

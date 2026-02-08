@@ -36,7 +36,7 @@
     <div class="container mt-20 bg-white">
         <div class="row g-4">
 
-            <div class="col-md-3">
+            <div class="col-md-4">
                 <div class="card shadow-sm sticky-tab">
                     <div class="card-header bg-primary text-white">Analysis Setup</div>
                     <div class="card-body">
@@ -50,10 +50,11 @@
                             </select>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label fw-bold">Upload Resumes (PDF/Docx)</label>
-                            <input type="file" class="form-control" id="resumeUpload" multiple>
-                            <div class="form-text">You can select multiple files at once.</div>
+                            <label class="form-label fw-bold">Upload Resumes (PDF only)</label>
+                            <input type="file" class="form-control" id="resumeUpload" />
+                            <!-- <div class="form-text">You can select multiple files at once.</div> -->
                         </div>
+                        <div class="mb-3 text-danger status"></div>
                         <button class="btn btn-primary w-100" id="btnAnalyze">
                             <i class="bi bi-search me-2"></i>Analyze Now
                         </button>
@@ -61,7 +62,7 @@
                 </div>
             </div>
 
-            <div class="col-md-6">
+            <div class="col-md-5">
                 <h4 class="mb-3">Analysis Results</h4>
                 <div id="loading" class="text-center d-none my-5">
                     <div class="spinner-border text-primary" role="status"></div>
@@ -70,22 +71,9 @@
 
                 <div id="resultsArea">
                     <div class="text-center text-muted my-5">
-                        <i class="bi bi-file-earmark-arrow-up style=" font-size: 3rem;"></i>
+                        <i class="bi bi-file-earmark-arrow-up" style="font-size: 3rem;"></i>
                         <p>Upload resumes to see the AI matching score.</p>
                     </div>
-                        <!-- <div class="card resume-card shadow-sm mb-3">
-                            <div class="card-body d-flex justify-content-between align-items-center">
-                                <div>
-                                    <h5 class="mb-1 text-primary">${files[i].name}</h5>
-                                    <p class="mb-0 text-muted"><i class="bi bi-briefcase me-1"></i> Match for: ${role}</p>
-                                    <small class="text-secondary">Extracted Skills: Java, Spring Boot, Microservices</small>
-                                </div>
-                                <div class="text-center">
-                                    <div class="text-${color} score-badge">${randomScore}%</div>
-                                    <small class="text-uppercase fw-bold">Match</small>
-                                </div>
-                            </div>
-                        </div> -->
                 </div>
             </div>
 
@@ -94,14 +82,7 @@
                     <div class="card-header bg-secondary text-white">Recent History</div>
                     <div class="list-group list-group-flush" id="historyList">
                         <div class="history-item">
-                            <!-- <small class="text-muted">26-Jan-2026 10:30 AM</small> -->
                             <div class="fw-bold">No History Available</div>
-                            <!-- <small>5 Resumes • Avg Score: 82%</small> -->
-                        </div>
-                        <div class="history-item">
-                            <small class="text-muted">25-Jan-2026 04:15 PM</small>
-                            <div class="fw-bold">Senior Data Lead</div>
-                            <small>12 Resumes • Avg Score: 65%</small>
                         </div>
                     </div>
                 </div>

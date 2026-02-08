@@ -10,15 +10,19 @@ $(document).ready(function () {
 
 // Inside your "Analyze" button click handler
 function analyzeResume() {
+    $('.status').html('');
     const fileInput = document.getElementById('resumeUpload');
     const role = document.getElementById('jobRole').value;
     const file = fileInput.files[0];
 
-    $('body').append("Role:" + role, " File:" + file.name);
-
     if (fileInput.files.length < 1) {
         // FIXME: Use better UI feedback
-        $('body').append("Please select at least one resume.");
+        $('.status').html("Please select at least one resume.");
+        return;
+    }
+
+    if (file.type !== "application/pdf") {
+        $('.status').html("Invalid file type. Please upload a PDF.");
         return;
     }
 
@@ -52,6 +56,7 @@ function loadHistoryDetails(evt) {
     $('.history-item').removeClass('active');
     var $parent = $(evt.currentTarget);
     const jobId = $(evt.currentTarget).addClass('active').data('id');
+    if (!jobId) return;
     const details = javaBackend.getHistoryDetails(jobId);
     $('#resultsArea').html(details);
 }

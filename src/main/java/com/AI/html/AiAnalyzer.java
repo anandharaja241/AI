@@ -37,10 +37,10 @@ public class AiAnalyzer {
         String htmlString = "", dbString = "";
         try {
             System.out.println(prompt);
-            // String response = sendAiRequest(prompt);
+            String response = sendAiRequest(prompt);
             String score = "", result = "", reason = "", skills = "";
 
-            String response = "{\"score\": 20, \"result\": \"Not Matched\", \"reason\": \"No Relevant Java and Spring Boot experience\", \"skills\": \"No relevant skills found\"}";
+            // String response = "{\"score\": 20, \"result\": \"Not Matched\", \"reason\": \"No Relevant Java and Spring Boot experience\", \"skills\": \"No relevant skills found\"}";
             System.out.println("AI Result: " + response);
             JsonObject output = JsonParser.parseString(response).getAsJsonObject();
             score = output.get("score").getAsString();

@@ -39,7 +39,7 @@
                 <div class="col-md-6">
                     <div class="input-group">
                         <span class="input-group-text bg-white border-end-0"><i class="bi bi-search"></i></span>
-                        <input type="text" id="searchInput" class="form-control border-start-0" placeholder="Search by ID" onkeyup="filterTable()">
+                        <input type="text" id="searchInput" class="form-control border-start-0" placeholder="Search by Role" onkeyup="filterTable()">
                     </div>
                 </div>
             </div>
@@ -82,7 +82,7 @@
             let rows = document.getElementById("jobTableBody").getElementsByTagName("tr");
             
             for (let row of rows) {
-                let text = row.cells[1].textContent || row.cells[1].innerText;
+                let text = row.cells[2].textContent || row.cells[2].innerText;
                 row.style.display = text.toUpperCase().indexOf(input) > -1 ? "" : "none";
             }
         }

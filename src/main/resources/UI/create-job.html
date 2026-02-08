@@ -30,26 +30,30 @@
         </div>
         <div class="card-body p-4">
             <form id="jobForm">
-                <div class="mb-3">
-                    <label for="role" class="form-label fw-bold">Role</label>
-                    <select class="form-select" id="role" required>
+                <div class="mb-3 role-parent">
+                    <label for="role" class="form-label d-block fw-bold">Role</label>
+                    <select class="form-select d-inline role-input" id="role">
                         <option value="" selected disabled>Select Role Type</option>
-                        <option value="developer">Software Developer</option>
-                        <option value="designer">UI/UX Designer</option>
-                        <option value="manager">Project Manager</option>
-                        <option value="qa">QA Engineer</option>
+                        <option class="option" value="developer">Software Developer</option>
+                        <option class="option" value="designer">UI/UX Designer</option>
+                        <option class="option" value="manager">Project Manager</option>
+                        <option class="option" value="qa">QA Engineer</option>
                     </select>
+                    <input type="text" class="role-input d-none" id="roleInput" placeholder="Enter the Job Role" name="role">
+                    <button class="btn btn-dark toggle-input" data-parentclass="role-parent" data-childclass="role-input">+</button>
                 </div>
 
-                <div class="mb-4">
+                <div class="mb-4 exp-parent">
                     <label for="experience" class="form-label fw-bold">Required Experience</label>
-                    <select class="form-select" id="experience" required>
-                        <option value="" selected disabled>Select Experience Level</option>
-                        <option value="entry">Entry Level (0-2 years)</option>
-                        <option value="mid">Mid-Senior (3-5 years)</option>
-                        <option value="senior">Senior (6-10 years)</option>
-                        <option value="lead">Lead / Architect (10+ years)</option>
+                    <select class="form-select d-inline exp-input" id="experience" name="experience">
+                        <option class="option" value="" selected disabled>Select Experience Level</option>
+                        <option class="option" value="entry">Entry Level (0-2 years)</option>
+                        <option class="option" value="mid">Mid-Senior (3-5 years)</option>
+                        <option class="option" value="senior">Senior (6-10 years)</option>
+                        <option class="option" value="lead">Lead / Architect (10+ years)</option>
                     </select>
+                    <input type="text" class="exp-input d-none" id="expInput" placeholder="Enter the Experience" name="experience">
+                    <button class="btn btn-dark toggle-input" data-parentclass="exp-parent" data-childclass="exp-input">+</button>
                 </div>
 
                 <div class="mb-4">
@@ -71,5 +75,17 @@
     <script src="lib/bootstrap.bundle.min.js"></script>
     <script src="lib/jquery-3.7.1.min.js"></script>
     <script src="app.js"></script>
+    <script>
+        $(document).ready(function() {
+            if (javaBackend['getRoleExpOptions']) {
+                var optionString = javaBackend.getRoleExpOptions();
+                if (optionString) {
+                    var options = optionString.split(';;');
+                    $('select.role-input').html(options[0]);
+                    $('select.exp-input').html(options[1]);
+                }
+            }
+        });
+    </script>
 </body>
 </html>

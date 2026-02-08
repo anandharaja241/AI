@@ -1,24 +1,38 @@
 package com.AI.html;
 
 import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
 
-import javafx.application.Platform;
 import javafx.scene.web.WebEngine;
 import javafx.stage.Stage;
 
 // This class handles actions triggered from HTML
 public class JsBackendAction {
-    private Stage webStage;
-    private WebEngine engine;
+    private static Stage webStage;
+    private static WebEngine engine;
 
-    public JsBackendAction(Stage stage, WebEngine webEngine) {
-        this.webStage = stage;
-        this.engine = webEngine;
+    private static volatile JsBackendAction instance;
+
+    private JsBackendAction(Stage stage, WebEngine webEngine) {}
+
+    public static JsBackendAction getInstance(Stage stage, WebEngine webEngine) {
+
+        if (instance == null) { // First check
+            synchronized (JsBackendAction.class) {
+                if (instance == null) { // Second check
+                    instance = new JsBackendAction(stage, webEngine);
+                }
+            }
+        }
+        JsBackendAction.webStage = stage;
+        JsBackendAction.engine = webEngine;
+        return instance;
     }
 
     public void navigateTo(String template) {
         ResumeAnalyzer analyzer = new ResumeAnalyzer();
-        analyzer.navigateTo(template, this.webStage, this.engine);
+        analyzer.navigateTo(template, JsBackendAction.webStage, JsBackendAction.engine);
     }
 
     public int createJobs(String role, String exp) {
@@ -29,13 +43,8 @@ public class JsBackendAction {
             columnList.add(role);
             columnList.add(exp);
             int status = Database.create(conn, "jobs", columns, columnList);
-            if (status > 0) {
-                System.out.println("Job created: " + role + ", " + exp);
-                return status; // Success
-            } else {
-                System.out.println("Job Failed: " + role + ", " + exp);
-                return status; // Failure
-            }
+            conn.close();
+            return status;
         } catch (Exception e) {
             e.printStackTrace();
             return -1; // Error
@@ -46,13 +55,8 @@ public class JsBackendAction {
         try {
             var conn = Database.connectDB();
             int status = Database.update(conn, id, role, exp);
-            if (status > 0) {
-                System.out.println("Job updated: " + id + ", " + role + ", " + exp);
-                return status; // Success
-            } else {
-                System.out.println("Job Update Failed: " + id + ", " + role + ", " + exp);
-                return status; // Failure
-            }
+            conn.close();
+            return status;
         } catch (Exception e) {
             e.printStackTrace();
             return -1; // Error
@@ -89,7 +93,7 @@ public class JsBackendAction {
                 // sb.append("Role: ").append(list.getString("role")).append(", Experience:
                 // ").append(list.getString("exp")).append("\n");
             }
-
+            conn.close();
             if (sb.length() == 0) {
                 return "<tr><td colspan='6' class='text-center'>No jobs found.</td></tr>";
             }
@@ -105,7 +109,8 @@ public class JsBackendAction {
             var conn = Database.connectDB();
             ResultSet list = Database.getAll(conn, "jobs");
             StringBuilder sb = new StringBuilder();
-            String role, exp, id, template;
+            sb.append("<option value=\"\" selected disabled>Select a Job Description</option>\n");
+            String role = "", exp = "", id = "", template = "";
             while (list.next()) {
                 role = list.getString("role");
                 exp = list.getString("exp");
@@ -113,6 +118,7 @@ public class JsBackendAction {
                 template = "<option value=\"" + id + "\">" + id + " " + role + " - " + exp + "</option>\n";
                 sb.append(template);
             }
+            conn.close();
             return sb.toString();
         } catch (Exception e) {
             e.printStackTrace();
@@ -128,6 +134,7 @@ public class JsBackendAction {
             if (rs.next()) {
                 String role = rs.getString("role");
                 String exp = rs.getString("exp");
+                conn.close();
                 return role + ";;" + exp; // Using ';;' as a delimiter
             } else {
                 return "";
@@ -142,11 +149,7 @@ public class JsBackendAction {
         try {
             var conn = Database.connectDB();
             boolean success = Database.delete(conn, id);
-            if (success) {
-                System.out.println("Jobs deleted: " + id);
-            } else {
-                System.out.println("Job Deletion Failed: " + id);
-            }
+            conn.close();
             return success;
         } catch (Exception e) {
             e.printStackTrace();
@@ -164,5 +167,63 @@ public class JsBackendAction {
 
     public String processWithAI(String fileName, String base64Data, String role) {
         return AiAnalyzer.processWithAI(fileName, base64Data, role);
+    }
+
+    public String getDashboardStats() {
+        String resultString = "0;;0;;0";
+        try {
+            var conn = Database.connectDB();
+            ResultSet list = Database.getAll(conn, "resumedata");
+            int totalResumes = 0, matchedResumes = 0, unmatchedResumes = 0;
+            while (list.next()) {
+                totalResumes++;
+                String infoString = list.getString("info");
+                String info[] = infoString.split(";;");
+
+                if (info.length > 0 && info[1].equalsIgnoreCase("matched")) {
+                    matchedResumes++;
+                } else if (info.length > 0 && (info[1].equalsIgnoreCase("unmatched") || info[1].equalsIgnoreCase("not matched"))) {
+                    unmatchedResumes++;
+                }
+            }
+            conn.close();
+            resultString = totalResumes + ";;" + matchedResumes + ";;" + unmatchedResumes; // Using ';;' as a delimiter
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return resultString;
+    }
+
+    public String getRoleExpOptions() {
+        try {
+            var conn = Database.connectDB();
+            ResultSet list = Database.getAll(conn, "jobs");
+            String role, exp;
+            List<String> roleList = new ArrayList<>();
+            List<String> expList = new ArrayList<>();
+            while (list.next()) {
+                role = list.getString("role");
+                exp = list.getString("exp");
+                roleList.add(role);
+                expList.add(exp);
+            }
+            conn.close();
+            List<String> uniqueRoleList = roleList.stream().distinct().sorted(String.CASE_INSENSITIVE_ORDER).toList();
+            List<String> uniqueExpList = expList.stream().distinct().sorted(String.CASE_INSENSITIVE_ORDER).toList();
+            StringBuilder sb = new StringBuilder();
+            sb.append("<option value=\"\" selected disabled>Select Role Type</option>\n");
+            for (String r : uniqueRoleList) {
+                sb.append("<option value=\"").append(r).append("\">").append(r).append("</option>\n");
+            }
+            sb.append(";;");
+            sb.append("<option value=\"\" selected disabled>Select Experience Level</option>\n");
+            for (String e : uniqueExpList) {
+                sb.append("<option value=\"").append(e).append("\">").append(e).append("</option>\n");
+            }
+            return sb.toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "<option value=\"\" disabled>Select Role Type</option>;;<option value=\"\" disabled>Select Experience Level</option>"; // Return empty options on error
+        }
     }
 }

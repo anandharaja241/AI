@@ -17,18 +17,11 @@ public class ResumeAnalyzer extends Application {
         WebEngine webEngine = webView.getEngine();
 
         // Load your HTML file
-        String pageUrl = getClass().getResource(template).toExternalForm();
+        String pageUrl = getClass().getResource(ResumeAnalyzer.template).toExternalForm();
         webEngine.load(pageUrl);
 
-        // Bridge: Allow JavaScript to call Java methods
-        webEngine.getLoadWorker().stateProperty().addListener((obs, oldState, newState) -> {
-            // System.out.println("1) START: oldState: " + oldState + ", newState: " + newState);
-            if (newState == javafx.concurrent.Worker.State.SUCCEEDED) {
-                // System.out.println("2) START: oldState: " + oldState + ", newState: " + newState);
-                JSObject window = (JSObject) webEngine.executeScript("window");
-                window.setMember("javaBackend", new JsBackendAction(stage, webEngine));
-            }
-        });
+        // Attach listener BEFORE loading
+        attachJavaScriptBridge(webEngine, stage);
 
         Scene scene = new Scene(webView, 800, 600);
         stage.setScene(scene);
@@ -42,26 +35,24 @@ public class ResumeAnalyzer extends Application {
     public void navigateTo(String template, Stage stage, WebEngine webEngine) {
         String pagePath = "/UI/" + template + ".html";
         if (getClass().getResource(pagePath) == null) {
-            System.out.println("Requested Page not found: " + pagePath);
+            System.out.println("[ERROR] Requested Page not found: " + pagePath);
             return;
         }
 
-        ResumeAnalyzer.template = template;
-        this.start(stage);
+        String url = getClass().getResource(pagePath).toExternalForm();
+        webEngine.load(url);
 
-        // String url = getClass().getResource(pagePath).toExternalForm();
-        // System.out.println("template: "+template +", url: "+ url);
-        // webEngine.load(url);
+        // Attach listener BEFORE loading to catch the state change
+        attachJavaScriptBridge(webEngine, stage);
+    }
 
-        // // This must be present to catch EVERY page load, not just the first one
-        // webEngine.getLoadWorker().stateProperty().addListener((obs, oldState, newState) -> {
-        //     System.out.println("1) navigateTo: oldState: " + oldState + ", newState: " + newState);
-        //     if (newState == javafx.concurrent.Worker.State.SUCCEEDED) {
-        //         System.out.println("2) navigateTo: oldState: " + oldState + ", newState: " + newState);
-        //         JSObject window = (JSObject) webEngine.executeScript("window");
-        //         window.setMember("javaBackend", new JsBackendAction(stage, webEngine));
-        //     }
-        // });
+    private static void attachJavaScriptBridge(WebEngine webEngine, Stage stage) {
+        webEngine.getLoadWorker().stateProperty().addListener((obs, oldState, newState) -> {
+            if (newState == javafx.concurrent.Worker.State.SUCCEEDED) {
+                JSObject window = (JSObject) webEngine.executeScript("window");
+                window.setMember("javaBackend", JsBackendAction.getInstance(stage, webEngine));
+            }
+        });
     }
 
     public static void main(String[] args) {
