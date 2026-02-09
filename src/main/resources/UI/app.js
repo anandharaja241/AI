@@ -22,14 +22,19 @@ $(function () {
         var parentClass = $(evt.currentTarget).data('parentclass');
         var childClass = $(evt.currentTarget).data('childclass');
         var $parent = $('.' + parentClass);
-        $parent.find('select.' + childClass).toggleClass('d-none');
+        $parent.find('.select2-container').toggleClass('d-none');
         $parent.find('input.' + childClass).toggleClass('d-none');
+        if ($parent.find('.select2-container').hasClass('d-none')) {
+            $parent.find('input.' + childClass).focus();
+        } else {
+            $parent.find('.select2-container').focus();
+        }
     });
 
-    if (javaBackend['getJobOptions']) {
+    if (javaBackend['getJobOptions'] && $('#jobRole').length > 0) {
         $('#jobRole').html(javaBackend.getJobOptions());
     }
-    if (javaBackend['getDashboardStats']) {
+    if (javaBackend['getDashboardStats'] && $('.total-resumes').length > 0) {
         var statsString = javaBackend.getDashboardStats();
         if (statsString && statsString.includes(";;")) {
             var parts = statsString.split(";;");
@@ -37,6 +42,17 @@ $(function () {
             $('.matched-resumes').html(parts[1] || 0);
             $('.unmatched-resumes').html(parts[2] || 0);
         }
+    }
+
+    if (javaBackend['getRecentResults']) {
+        var recentResults = javaBackend.getRecentResults(5);
+        if (recentResults && $('.recent-results').length > 0) {
+            $('.recent-results').html(recentResults);
+        }
+    }
+
+    if ($('select').length > 0) {
+        $('select').select2({selectOnClose: true, closeOnSelect: true, theme: "classic"});
     }
 });
 
@@ -52,6 +68,7 @@ function processCreateJob(evt) {
     var $expInput = getCurrentField($('.exp-input').removeClass('is-invalid'));
     var role = $roleInput.val();
     var exp = $expInput.val();
+
     $('.status').html('');
 
     if (!role) {
@@ -84,7 +101,6 @@ function processCreateJob(evt) {
 }
 
 function processUpdateJob(evt) {
-    // var action = evt.currentTarget.dataset.action;
     var id = evt.currentTarget.dataset.id;
     var role = $('#role').removeClass('is-invalid').val();
     var exp = $('#experience').removeClass('is-invalid').val();
@@ -104,7 +120,7 @@ function processUpdateJob(evt) {
         var status = javaBackend.updateJobs(""+id, role, exp);
 
         if (status) {
-            $('.status').addClass('text-danger').append('The update job has successful');
+            $('.status').addClass('text-success').append('The update job has successful');
         } else {
             $('.status').addClass('text-danger').append('The update job has failed');
         }
@@ -120,7 +136,6 @@ function processDeleteJob(evt) {
         var status = javaBackend.deleteJobs(""+id);
 
         if (status) {
-            // $deleteBtn.closest('tr').remove();
             location.reload();
         } else {
             $('.status').addClass('text-danger').append('The delete job has failed');
@@ -136,8 +151,8 @@ function setJobId(evt) {
 
 function getCurrentField($selector) {
     if (!$selector || $selector.length === 0) return null;
-    if ($selector.eq(0).hasClass('d-none')) {
-        return $selector.eq(1);
+    if ($selector.eq(1).hasClass('d-none')) {
+        return $selector.eq(0);
     }
-    return $selector.eq(0);
+    return $selector.eq(1);
 }

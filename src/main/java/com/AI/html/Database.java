@@ -106,7 +106,7 @@ public class Database {
             ps.setString(3, id);
             int rowsaffect = ps.executeUpdate();
 
-            System.out.println(rowsaffect + " Updated");
+            System.out.println(rowsaffect + " record(s) Updated");
             return 1;
 
         } catch (SQLException e) {
@@ -123,7 +123,7 @@ public class Database {
             String sql = "DELETE FROM jobs WHERE id IN (" + ids + ")";
             Statement stmt = conn.createStatement();
             stmt.executeUpdate(sql);
-            System.out.println("Delete");
+            System.out.println("1 record deleted");
             return true;
         } catch (Exception e) {
             e.printStackTrace();

@@ -87,11 +87,9 @@ public class JsBackendAction {
                         + id + "\" data-href=\"edit-job\"><i\n" + //
                         "                class=\"bi bi-pencil\"></i></button>\n" + //
                         "        <button class=\"btn btn-outline-danger delete-btn btn-sm nav-btn\" data-id=\"" + id
-                        + "\"><i class=\"bi bi-trash\"></i></button>\n" + //
+                        + "\" data-href=\"list-job\"><i class=\"bi bi-trash\"></i></button>\n" + //
                         "    </td>\n" + //
                         "</tr>");
-                // sb.append("Role: ").append(list.getString("role")).append(", Experience:
-                // ").append(list.getString("exp")).append("\n");
             }
             conn.close();
             if (sb.length() == 0) {
@@ -167,6 +165,10 @@ public class JsBackendAction {
 
     public String processWithAI(String fileName, String base64Data, String role) {
         return AiAnalyzer.processWithAI(fileName, base64Data, role);
+    }
+
+    public String getRecentResults(int count) {
+        return AiAnalyzer.getRecentResults(count);
     }
 
     public String getDashboardStats() {

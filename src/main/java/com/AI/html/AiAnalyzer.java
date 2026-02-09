@@ -36,21 +36,25 @@ public class AiAnalyzer {
     public static String getAiResponse(String prompt, String jobId, String fileName, String role) {
         String htmlString = "", dbString = "";
         try {
-            System.out.println(prompt);
             String response = sendAiRequest(prompt);
-            String score = "", result = "", reason = "", skills = "";
+            String score = "", result = "", reason = "", skills = "", email = "", mobile = "";
 
-            // String response = "{\"score\": 20, \"result\": \"Not Matched\", \"reason\": \"No Relevant Java and Spring Boot experience\", \"skills\": \"No relevant skills found\"}";
-            System.out.println("AI Result: " + response);
-            JsonObject output = JsonParser.parseString(response).getAsJsonObject();
+            // String response = "{\"score\": 20, \"result\": \"Not Matched\", \"reason\": \"No Relevant Java and Spring Boot experience\", \"skills\": \"No relevant skills found\", \"email\": \"vvbala1995@gmail.com\", \"mobile\": \"9876543211, ...\"}";
+            // System.out.println("AI prompt: " + prompt);
+            // System.out.println("AI Result: " + response);
+            String cleanResponse = response.trim();
+            JsonObject output = JsonParser.parseString(cleanResponse).getAsJsonObject();
             score = output.get("score").getAsString();
             result = output.get("result").getAsString();
             reason = output.get("reason").getAsString();
             skills = output.get("skills").getAsString();
-            dbString = score + ";;" + result + ";;" + reason + ";;" + skills + ";;" + fileName;
+            email = output.get("email").getAsString();
+            mobile = output.get("mobile").getAsString();
+            String jobTitle = getJobById(jobId);
+            dbString = score + ";;" + result + ";;" + reason + ";;" + skills + ";;" + fileName + ";;" + jobTitle + ";;" + email + ";;" + mobile;
             System.out.println(dbString);
             String lastCreatedDate = insertData(dbString, jobId);
-            String lastCreatedDateString = lastCreatedDate.equalsIgnoreCase("") ? "NOT OK" : "Created: " + lastCreatedDate;
+            String lastCreatedDateString = lastCreatedDate.equalsIgnoreCase("") ? "-" : "Created: " + lastCreatedDate;
 
             String color = result.equalsIgnoreCase("Matched") ? "text-success" : "text-danger";
 
@@ -61,6 +65,8 @@ public class AiAnalyzer {
                                 "            <p class=\"mb-0 text-muted\"><i class=\"bi bi-briefcase me-1\"></i> Match for: "+role+"</p>\n" + //
                                 "            <small class=\"text-secondary\">Extracted Skills: "+skills+"</small>\n" + //
                                 "            <p class=\"text-secondary m-0\">Reason: " + reason + "</p>\n" + //
+                                "            <p class=\"text-secondary m-0\">Email: " + (email != null && !email.isEmpty() ? email : "-") + "</p>\n" + //
+                                "            <p class=\"text-secondary m-0\">Mobile: " + (mobile != null && !mobile.isEmpty() ? mobile : "-") + "</p>\n"+ //
                                 "            <p class=\"text-secondary m-0\">" + lastCreatedDateString + "</p>\n" + //
                                 "        </div>\n" + //
                                 "        <div class=\"text-center\">\n" + //
@@ -101,14 +107,11 @@ public class AiAnalyzer {
                 .build();
 
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        System.out.println("API procssing...");
 
         if (response.statusCode() == 200) {
-            System.out.println("API success 1");
             // Parse the response using JsonParser
             JsonObject root = JsonParser.parseString(response.body()).getAsJsonObject();
-            System.out.println(JsonParser.parseString(response.body()).getAsJsonObject());
-            System.out.println("API success 2");
+
             return root.getAsJsonArray("choices")
                     .get(0).getAsJsonObject()
                     .get("message").getAsJsonObject() // Note: path is message -> content
@@ -134,19 +137,17 @@ public class AiAnalyzer {
         try {
             var conn = Database.connectDB();
             ResultSet list = Database.getAll(conn, "resumedata");
-            String info, jobid, created, id;
+            String info = "", created = "", id = "";
             int index = 0;
             while (list.next()) {
                 info = list.getString("info");
                 created = list.getString("createDate");
-                jobid = list.getString("jobid");
+                // jobid = list.getString("jobid");
                 id = list.getString("id");
-                if (jobid == null || jobid.isEmpty()) {
-                    continue;
-                }
-                String jobTitle = getJobById(jobid);
+
                 String score = info.split(";;")[0];
                 String result = info.split(";;")[1];
+                String jobTitle = info.split(";;")[5];
                 String activeClass = index == 0 ? "active" : "";
                 String color = result.equalsIgnoreCase("Matched") ? "text-success" : "text-danger";
                 results += "<div class=\"history-item " + activeClass + "\" data-id=\"" + id + "\">\n" +
@@ -208,15 +209,16 @@ public class AiAnalyzer {
             ResultSet rs = Database.get(conn, "resumedata", condition);
             if (rs.next()) {
                 String info = rs.getString("info");
-                String jobid = rs.getString("jobid");
                 String created = rs.getString("createDate");
-                String jobTitle = getJobById(jobid);
                 String score = info.split(";;")[0];
                 String resultValue = info.split(";;")[1];
                 String textColor = resultValue.equalsIgnoreCase("Matched") ? "text-success" : "text-danger";
                 String reason = info.split(";;")[2];
                 String skills = info.split(";;")[3];
                 String fileName = info.split(";;")[4];
+                String jobTitle = info.split(";;")[5];
+                String email = info.split(";;")[6];
+                String mobile = info.split(";;")[7];
                 result += "<div class=\"card resume-card shadow-sm mb-3\">\n" + //
                         "    <div class=\"card-body d-flex justify-content-between align-items-center\">\n" + //
                         "        <div>\n" + //
@@ -225,6 +227,8 @@ public class AiAnalyzer {
                         + jobTitle + "</p>\n" + //
                         "            <small class=\"text-secondary\">Skills: " + skills + "</small>\n" + //
                         "            <p class=\"text-secondary m-0\">Reason: " + reason + "</p>\n" + //
+                        "            <p class=\"text-secondary m-0\">Email: " + (email != null && !email.isEmpty() ? email : "-") + "</p>\n" + //
+                        "            <p class=\"text-secondary m-0\">Mobile: " + (mobile != null && !mobile.isEmpty() ? mobile : "-") + "</p>\n"+ //
                         "            <p class=\"text-secondary m-0\">Created: " + created + "</p>\n" + //
                         "        </div>\n" + //
                         "        <div class=\"text-center\">\n" + //
@@ -241,8 +245,37 @@ public class AiAnalyzer {
         return result;
     }
 
+    public static String getRecentResults(int rowCount) {
+        String results = "";
+        try {
+            var conn = Database.connectDB();
+            String condition = "id is not null ORDER BY createDate DESC LIMIT " + rowCount;
+            ResultSet rs = Database.get(conn, "resumedata", condition);
+            while (rs.next()) {
+                String id = rs.getString("id");
+                String info = rs.getString("info");
+                String created = rs.getString("createDate");
+                String score = info.split(";;")[0];
+                String result = info.split(";;")[1];
+                String jobTitle = info.split(";;")[5];
+                String email = info.split(";;")[6];
+                String textColor = result.equalsIgnoreCase("Matched") ? "bg-success" : "bg-danger";
+                results += "<tr>\n" + //
+                            "<td>" + id + "</td>\n" + //
+                            "<td>" + email + "</td>\n" + //
+                            "<td>" + jobTitle + "</td>\n" + //
+                            "<td>" + score + "%</td>\n" + //
+                            "<td><span class=\"badge " + textColor + "\">" + result + "</span></td>\n" + //
+                            "<td>" + created + "</td>\n" + //
+                            "</tr>";
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            results += "<tr><td colspan='6' class='text-center'>No results found.</td></tr>";
+        }
+        return results;
+    }
     public static String processWithAI(String fileName, String base64Data, String jobId) {
-        System.out.println("Received Base64 Length: " + base64Data.length());
         String resultHtml = "";
         try {
             String filePath = saveBase64ToFile(base64Data, "uploads/" + fileName);
@@ -252,12 +285,11 @@ public class AiAnalyzer {
 
             // 2. Prepare AI Prompt
             String prompt = "Analyze this resume text for the role of '" + roleString +
-                    "'. Provide a match score (0-100), result(Matched or Not Matched), 1 line explanation for the score as reason and 3 key skills if exists, otherwise return 'No relevant skills found'. " +
+                    "'. Provide a match score (0-100), result(Matched or Not Matched), 1 line explanation for the score as reason and 3 key skills if exists, otherwise return 'No relevant skills found', extracted valid email and mobile numbers if available. " +
                     "Return ONLY a JSON object with this sample format: " +
-                    "{\"score\": 85, \"result\": \"Matched or Not Matched\", \"reason\": \"Short explanation for the score\", \"skills\": \"skill1, skill2, skill3\"} " +
+                    "{\"score\": 85, \"result\": \"Matched or Not Matched\", \"reason\": \"Short explanation for the score\", \"skills\": \"skill1, skill2, skill3\", \"email\": \"user@example.com\", \"mobile\": \"9876543211, ...\"} " +
                     "Resume text: " + resumeText;
 
-            System.out.println(prompt);
             // 3. Call AI API (Example using an HTTP client)
             resultHtml = getAiResponse(prompt, jobId, fileName, roleString);
         } catch (Exception e) {

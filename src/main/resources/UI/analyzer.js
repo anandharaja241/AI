@@ -2,9 +2,11 @@ $(document).ready(function () {
     $('body').on('click', '#btnAnalyze', analyzeResume);
     $('body').on('click', '.history-item', loadHistoryDetails);
 
-    var initialHistory = javaBackend.loadHistory();
-    if (initialHistory != "") {
-        $('#historyList').html(initialHistory);
+    if (javaBackend.loadHistory) {
+        var initialHistory = javaBackend.loadHistory();
+        if (initialHistory != "") {
+            $('#historyList').html(initialHistory);
+        }
     }
 });
 
