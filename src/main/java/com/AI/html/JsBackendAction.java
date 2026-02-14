@@ -98,7 +98,7 @@ public class JsBackendAction {
             return sb.toString();
         } catch (Exception e) {
             e.printStackTrace();
-            return "Error retrieving jobs.";
+            return "<tr><td colspan='6' class='text-center'>No jobs found.</td></tr>";
         }
     }
 

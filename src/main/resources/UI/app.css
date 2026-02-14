@@ -84,6 +84,9 @@ body {
 /* END: list page CSS */
 
 /* START: Resume-analyzer page CSS */
+.resume-analyzer .container-fluid {
+    width: 90%;
+}
 .resume-analyzer .sticky-tab {
     position: sticky;
     top: 20px;
@@ -117,13 +120,6 @@ body {
     max-height: 560px;
     overflow-y: auto;
 }
-
-@media (max-width: 1199px) {
-    .resume-analyzer .container-fluid {
-        width: 90%;
-    }
-}
-
 /* END: Resume-analyzer page CSS */
 
 /* START: Add/Edit Job Description page CSS */
