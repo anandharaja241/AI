@@ -43,6 +43,8 @@ public class AiAnalyzer {
             // System.out.println("AI prompt: " + prompt);
             // System.out.println("AI Result: " + response);
             String cleanResponse = response.trim();
+
+            System.out.println("cleanResponse:"+cleanResponse);
             JsonObject output = JsonParser.parseString(cleanResponse).getAsJsonObject();
             score = output.get("score").getAsString();
             result = output.get("result").getAsString();
