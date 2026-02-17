@@ -56,6 +56,11 @@ public class ResumeAnalyzer extends Application {
     }
 
     public static void main(String[] args) {
+        try {
+            Database.init();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         launch(args);
     }
 }

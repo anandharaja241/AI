@@ -7,6 +7,8 @@ import java.net.http.HttpResponse;
 import java.sql.ResultSet;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.Strictness;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -86,7 +88,10 @@ public class AiAnalyzer {
 
     public static String sendAiRequest(String userPrompt) throws Exception {
         HttpClient client = HttpClient.newHttpClient();
-        Gson gson = new Gson();
+        // Gson gson = new Gson();
+        Gson gson = new GsonBuilder()
+        .setStrictness(Strictness.LENIENT)
+        .create();
 
         // Construct the request body using Gson JsonObject
         JsonObject requestBody = new JsonObject();
@@ -174,8 +179,10 @@ public class AiAnalyzer {
                 String jobId = rs.getString("id");
                 String role = rs.getString("role");
                 String exp = rs.getString("exp");
+                conn.close();
                 return jobId + " " + role + " - " + exp; // Using ';;' as a delimiter
             } else {
+                conn.close();
                 return "";
             }
         } catch (Exception e) {
@@ -193,8 +200,10 @@ public class AiAnalyzer {
                 // String jobId = rs.getString("id");
                 String role = rs.getString("role");
                 String exp = rs.getString("exp");
+                conn.close();
                 return role + " - " + exp; // Using '-' as a delimiter
             } else {
+                conn.close();
                 return "";
             }
         } catch (Exception e) {
@@ -227,7 +236,7 @@ public class AiAnalyzer {
                         "            <h5 class=\"mb-1 text-primary\">" + fileName + "</h5>\n" + //
                         "            <p class=\"mb-0 text-muted\"><i class=\"bi bi-briefcase me-1\"></i> Match for: "
                         + jobTitle + "</p>\n" + //
-                        "            <small class=\"text-secondary\">Skills: " + skills + "</small>\n" + //
+                        "            <small class=\"text-secondary\">Extracted Skills: " + skills + "</small>\n" + //
                         "            <p class=\"text-secondary m-0\">Reason: " + reason + "</p>\n" + //
                         "            <p class=\"text-secondary m-0\">Email: " + (email != null && !email.isEmpty() ? email : "-") + "</p>\n" + //
                         "            <p class=\"text-secondary m-0\">Mobile: " + (mobile != null && !mobile.isEmpty() ? mobile : "-") + "</p>\n"+ //
@@ -241,6 +250,7 @@ public class AiAnalyzer {
                         "    </div>\n" + //
                         "</div>\n";
             }
+            conn.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -300,7 +310,7 @@ public class AiAnalyzer {
         return resultHtml;
     }
 
-public static String saveBase64ToFile(String base64Content, String outputFilePath) throws IOException {
+    public static String saveBase64ToFile(String base64Content, String outputFilePath) throws IOException {
         // 2. Decode the Base64 string into a byte array
         byte[] decodedBytes = Base64.getDecoder().decode(base64Content);
 
