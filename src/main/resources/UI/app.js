@@ -22,12 +22,12 @@ $(function () {
         var parentClass = $(evt.currentTarget).data('parentclass');
         var childClass = $(evt.currentTarget).data('childclass');
         var $parent = $('.' + parentClass);
-        $parent.find('.select2-container').toggleClass('d-none');
+        $parent.find('.select2-container, select').toggleClass('d-none');
         $parent.find('input.' + childClass).toggleClass('d-none');
-        if ($parent.find('.select2-container').hasClass('d-none')) {
+        if ($parent.find('.select2-container, select').hasClass('d-none')) {
             $parent.find('input.' + childClass).focus();
         } else {
-            $parent.find('.select2-container').focus();
+            $parent.find('.select2-container, select').focus();
         }
     });
 

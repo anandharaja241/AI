@@ -58,6 +58,8 @@ public class Database {
         try (Connection conn = connectDB(); Statement stmt = conn.createStatement()) {
             stmt.execute(createJobsTable);
             stmt.execute(createResumeDataTable);
+            conn.close();
+            System.out.println("Tables created successfully.");
         } catch (SQLException e) {
             e.printStackTrace();
         }
