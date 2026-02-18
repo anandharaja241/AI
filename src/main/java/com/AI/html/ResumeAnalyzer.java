@@ -7,7 +7,9 @@ import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import netscape.javascript.JSObject;
 
-public class Demo extends Application {
+public class ResumeAnalyzer extends Application {
+
+    private static String template = "/UI/dashboard.html";
 
     @Override
     public void start(Stage stage) {
@@ -15,41 +17,40 @@ public class Demo extends Application {
         WebEngine webEngine = webView.getEngine();
 
         // Load your HTML file
-        String pageUrl = getClass().getResource("/UI/dashboard.html").toExternalForm();
+        String pageUrl = getClass().getResource(ResumeAnalyzer.template).toExternalForm();
         webEngine.load(pageUrl);
 
-        // Bridge: Allow JavaScript to call Java methods
-        webEngine.getLoadWorker().stateProperty().addListener((obs, oldState, newState) -> {
-            if (newState == javafx.concurrent.Worker.State.SUCCEEDED) {
-                JSObject window = (JSObject) webEngine.executeScript("window");
-                window.setMember("javaBackend", new JsBackendAction(stage, webEngine));
-            }
-        });
+        // Attach listener BEFORE loading
+        attachJavaScriptBridge(webEngine, stage);
 
         Scene scene = new Scene(webView, 800, 600);
         stage.setScene(scene);
         // Set to maximized
         stage.setMaximized(true);
 
-        stage.setTitle("AI Resume Analyzer");
+        stage.setTitle("AI Smart Resume Analyzer");
         stage.show();
     }
 
     public void navigateTo(String template, Stage stage, WebEngine webEngine) {
         String pagePath = "/UI/" + template + ".html";
         if (getClass().getResource(pagePath) == null) {
-            System.out.println("Requested Page not found: " + pagePath);
+            System.out.println("[ERROR] Requested Page not found: " + pagePath);
             return;
         }
 
         String url = getClass().getResource(pagePath).toExternalForm();
         webEngine.load(url);
 
-        // This must be present to catch EVERY page load, not just the first one
+        // Attach listener BEFORE loading to catch the state change
+        attachJavaScriptBridge(webEngine, stage);
+    }
+
+    private static void attachJavaScriptBridge(WebEngine webEngine, Stage stage) {
         webEngine.getLoadWorker().stateProperty().addListener((obs, oldState, newState) -> {
             if (newState == javafx.concurrent.Worker.State.SUCCEEDED) {
                 JSObject window = (JSObject) webEngine.executeScript("window");
-                window.setMember("javaBackend", new JsBackendAction(stage, webEngine));
+                window.setMember("javaBackend", JsBackendAction.getInstance(stage, webEngine));
             }
         });
     }

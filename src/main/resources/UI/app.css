@@ -12,16 +12,25 @@ body {
     border: 2px inset rgb(13, 110, 253);
 }
 
+.container {
+    border-radius: 20px;
+}
+
 .form-card {
     max-width: 600px;
     margin: auto;
     border: none;
     box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+    border-radius: 20px;
 }
 
 .card {
     border: none;
     box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.mt-10 {
+    margin-top: 10vh;
 }
 
 .mt-20 {
@@ -34,9 +43,6 @@ body {
 }
 
 .app-bg-img {
-    /* background-image: url('https://img.freepik.com/free-vector/background-with-black-lines_1051-1040.jpg?semt=ais_hybrid&w=1040&q=80');
-    background-size: cover;
-    background-position: center; */
     background: linear-gradient(rgba(0, 0, 0, 0.76), rgba(223, 55, 78, 0.28)), linear-gradient(white, white);
     min-height: 100vh;
 }
@@ -49,6 +55,15 @@ body {
 .status.text-danger,
 .status.text-success {
     display: block;
+}
+
+@media (max-width: 1199px) {
+    /* Your CSS rules for tablets and smaller desktops go here */
+    .container, .container-fluid {
+        /* width: 95%; */
+        margin-top: 10vh;
+        margin-bottom: 10vh;
+    }
 }
 
 /* END: Common CSS*/
@@ -69,6 +84,9 @@ body {
 /* END: list page CSS */
 
 /* START: Resume-analyzer page CSS */
+.resume-analyzer .container-fluid {
+    width: 90%;
+}
 .resume-analyzer .sticky-tab {
     position: sticky;
     top: 20px;
@@ -94,8 +112,20 @@ body {
     padding: 10px;
 }
 
-.resume-analyzer .history-item:hover {
+.resume-analyzer .history-item:hover, .resume-analyzer .history-item.active {
     background-color: #e9ecef;
 }
 
+#historyList {
+    max-height: 560px;
+    overflow-y: auto;
+}
 /* END: Resume-analyzer page CSS */
+
+/* START: Add/Edit Job Description page CSS */
+.role-input, .exp-input {
+    width: 70% !important;
+    height: 25px !important;
+}
+
+/* END: Add/Edit Job Description page CSS */

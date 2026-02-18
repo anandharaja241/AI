@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,14 +14,16 @@
     <nav class="navbar navbar-expand-lg navbar-white bg-white sticky-top px-20">
         <ul class="nav gap-2">
             <li class="nav-item">
-                <button class="nav-link nav-btn active rounded" href="#" data-href="dashboard"><i class="bi bi-house-door me-2"></i> Dashboard</button>
+                <button class="nav-link nav-btn active rounded" href="#" data-href="dashboard"><i
+                        class="bi bi-house-door me-2"></i> Dashboard</button>
             </li>
             <li class="nav-item">
                 <button class="nav-link nav-btn rounded" href="#" data-href="list-job"><i
                         class="bi bi-graph-up me-2"></i> Jobs list</button>
             </li>
             <li class="nav-item">
-                <button class="nav-link nav-btn rounded" href="#" data-href="resume-analyzer"><i class="bi bi-layers me-2"></i> Resume Analyzer</button>
+                <button class="nav-link nav-btn rounded" href="#" data-href="resume-analyzer"><i
+                        class="bi bi-layers me-2"></i> Resume Analyzer</button>
             </li>
         </ul>
     </nav>
@@ -28,10 +31,11 @@
         <div class="row">
 
             <main class="col-md-12 ms-sm-auto col-lg-12 px-md-4 py-4">
-                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <div
+                    class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                     <h1 class="h2">Overview</h1>
                     <div class="btn-toolbar mb-2 mb-md-0">
-                        <button type="button" class="btn btn-sm btn-primary" onclick="javaBackend.triggerAction('Refresh Data')">
+                        <button type="button" class="btn btn-sm btn-primary" onclick="location.reload();">
                             <i class="bi bi-arrow-clockwise me-1"></i> Refresh
                         </button>
                     </div>
@@ -40,43 +44,50 @@
                 <div class="row g-4 mb-4">
                     <div class="col-12 col-sm-6 col-xl-3">
                         <div class="card p-3">
-                            <div class="text-muted small">CPU Usage</div>
-                            <div class="h4 mb-0">12%</div>
+                            <div class="text-muted small">Total resumes analysed</div>
+                            <div class="h4 mb-0 total-resumes">0</div>
                         </div>
                     </div>
                     <div class="col-12 col-sm-6 col-xl-3">
                         <div class="card p-3">
-                            <div class="text-muted small">Active Threads</div>
-                            <div class="h4 mb-0">42</div>
+                            <div class="text-muted small">Matched Resumes</div>
+                            <div class="h4 mb-0 matched-resumes">0</div>
                         </div>
                     </div>
                     <div class="col-12 col-sm-6 col-xl-3">
                         <div class="card p-3">
-                            <div class="text-muted small">Memory Used</div>
-                            <div class="h4 mb-0">1.2 GB</div>
+                            <div class="text-muted small">Unmatched Resumes</div>
+                            <div class="h4 mb-0 unmatched-resumes">0</div>
                         </div>
                     </div>
                     <div class="col-12 col-sm-6 col-xl-3">
                         <div class="card p-3 border-start border-primary border-4">
-                            <div class="text-muted small">AI Models Loaded</div>
-                            <div class="h4 mb-0">5</div>
+                            <div class="text-muted small">AI Model Loaded</div>
+                            <div class="small mb-0">Grog llama-3.3-70b-versatile</div>
                         </div>
                     </div>
                 </div>
 
-                <div class="card">
+                <div class="card mt-10">
                     <div class="card-header bg-white"><strong>Recent Activity</strong></div>
                     <div class="card-body">
-                        <p class="card-text text-muted">This dashboard is running inside a JavaFX WebView. All buttons can trigger native Java functions.</p>
+                        <!-- <p class="card-text text-muted">This dashboard is running inside a JavaFX WebView. All buttons can trigger native Java functions.</p> -->
                         <table class="table table-hover">
                             <thead>
-                                <tr><th>Task</th><th>Status</th><th>Time</th></tr>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Candidate Email</th>
+                                    <th>Job role</th>
+                                    <th>Score</th>
+                                    <th>Result</th>
+                                    <th>Create date</th>
+                                </tr>
                             </thead>
-                            <tbody>
-                                <tr><td>Neural Analysis</td><td><span class="badge bg-info">Processing</span></td><td>12:45 PM</td></tr>
-                                <tr><td>Data Sync</td><td><span class="badge bg-success">Completed</span></td><td>11:20 AM</td></tr>
+                            <tbody class="recent-results">
+                                <tr><td colspan='6' class='text-center'>No results found.</td></tr>
                             </tbody>
                         </table>
+                        <button class="btn btn-primary nav-btn" data-href="resume-analyzer"><i class="bi bi-arrow-right-circle me-2"></i>View more</button>
                     </div>
                 </div>
             </main>
@@ -87,4 +98,5 @@
     <script src="lib/jquery-3.7.1.min.js"></script>
     <script src="app.js"></script>
 </body>
+
 </html>

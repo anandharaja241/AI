@@ -1,53 +1,99 @@
-var javaBackend = javaBackend || {};
+var javaBackend = javaBackend || '';
 var options = options || {};
 
 $(function () {
     // Initial Events
-    // setActiveNavButton(javaBackend.currentPage);
+    if (javaBackend == '') {
+        $('body').addClass('error-page');
+        setTimeout(function() {
+            location.reload();
+        }, 500);
+    }
 
     // Event handlers
     $('body').on('click', '.nav-btn', navigateTo);
-    $('.create-btn').on('click', processCreateJob);
+    $('body').on('click', '.create-btn', processCreateJob);
     $('body').on('click', '.edit-nav-btn', setJobId);
-    $('.update-btn').on('click', processUpdateJob);
+    $('body').on('click', '.update-btn', processUpdateJob);
     $('body').on('click', '.delete-btn', processDeleteJob);
 
+    $('.toggle-input').on('click', function(evt) {
+        evt.preventDefault();
+        var parentClass = $(evt.currentTarget).data('parentclass');
+        var childClass = $(evt.currentTarget).data('childclass');
+        var $parent = $('.' + parentClass);
+        $parent.find('.select2-container, select').toggleClass('d-none');
+        $parent.find('input.' + childClass).toggleClass('d-none');
+        if ($parent.find('.select2-container, select').hasClass('d-none')) {
+            $parent.find('input.' + childClass).focus();
+        } else {
+            $parent.find('.select2-container, select').focus();
+        }
+    });
 
-    if (!javaBackend['createJobs']) {
-        $('body').append("Status: Backend createJobs function not found.");
+    if (javaBackend['getJobOptions'] && $('#jobRole').length > 0) {
+        $('#jobRole').html(javaBackend.getJobOptions());
+    }
+    if (javaBackend['getDashboardStats'] && $('.total-resumes').length > 0) {
+        var statsString = javaBackend.getDashboardStats();
+        if (statsString && statsString.includes(";;")) {
+            var parts = statsString.split(";;");
+            $('.total-resumes').html(parts[0] || 0);
+            $('.matched-resumes').html(parts[1] || 0);
+            $('.unmatched-resumes').html(parts[2] || 0);
+        }
+    }
+
+    if (javaBackend['getRecentResults']) {
+        var recentResults = javaBackend.getRecentResults(5);
+        if (recentResults && $('.recent-results').length > 0) {
+            $('.recent-results').html(recentResults);
+        }
+    }
+
+    if ($('select').length > 0) {
+        $('select').select2({selectOnClose: true, closeOnSelect: true, theme: "classic"});
     }
 });
 
 function navigateTo(evt) {
+    if (javaBackend == '') {
+        location.reload();
+    }
     javaBackend.navigateTo && javaBackend.navigateTo(evt.currentTarget.dataset.href);
 }
 
 function processCreateJob(evt) {
-    // var action = evt.currentTarget.dataset.action;
-    var role = $('#role').removeClass('is-invalid').val();
-    var exp = $('#experience').removeClass('is-invalid').val();
+    var $roleInput = getCurrentField($('.role-input').removeClass('is-invalid'));
+    var $expInput = getCurrentField($('.exp-input').removeClass('is-invalid'));
+    var role = $roleInput.val();
+    var exp = $expInput.val();
+
     $('.status').html('');
-    $('body').append("Status: 1 Processing...");
 
     if (!role) {
         $('.status').append('Please select role').addClass('text-danger');
-        $('#role').addClass('is-invalid').focus();
+        $('.role-input').addClass('is-invalid').focus();
         return;
     } else if (!exp) {
         $('.status').append('Please select experience').addClass('text-danger');
-        $('#experience').addClass('is-invalid').focus();
+        $('.exp-input').addClass('is-invalid').focus();
         return;
     }
 
-    $('body').append("Status: 2 Processing...");
-
     if (javaBackend['createJobs']) {
-        $('body').append("Status: 3 Processing...");
         var status = javaBackend.createJobs(role, exp);
-        $('body').append("Status: " + status);
 
         if (status) {
-            $('.status').addClass('text-danger').append('The create job has successful');
+            $('.status').addClass('text-success').append('The create job was successful');
+            if ($roleInput.is('input')) {
+                $('select.role-input').append("<option value='"+role+"'>"+role+"</option>");
+            }
+            if ($expInput.is('input')) {
+                $('select.exp-input').append("<option value='"+exp+"'>"+exp+"</option>");
+            }
+            $roleInput.val('');
+            $expInput.val('');
         } else {
             $('.status').addClass('text-danger').append('The create job has failed');
         }
@@ -55,12 +101,10 @@ function processCreateJob(evt) {
 }
 
 function processUpdateJob(evt) {
-    // var action = evt.currentTarget.dataset.action;
     var id = evt.currentTarget.dataset.id;
     var role = $('#role').removeClass('is-invalid').val();
     var exp = $('#experience').removeClass('is-invalid').val();
     $('.status').html('');
-    $('body').append("Status: 1 Processing...");
 
     if (!role) {
         $('.status').append('Please select role').addClass('text-danger');
@@ -72,15 +116,11 @@ function processUpdateJob(evt) {
         return;
     }
 
-    $('body').append("Status: 2 Processing...");
-
     if (javaBackend['updateJobs']) {
-        $('body').append("Status: 3 Processing...");
         var status = javaBackend.updateJobs(""+id, role, exp);
-        $('body').append("id: " + id);
 
         if (status) {
-            $('.status').addClass('text-danger').append('The update job has successful');
+            $('.status').addClass('text-success').append('The update job has successful');
         } else {
             $('.status').addClass('text-danger').append('The update job has failed');
         }
@@ -91,13 +131,11 @@ function processDeleteJob(evt) {
     var $deleteBtn = $(evt.currentTarget);
     var id = evt.currentTarget.dataset.id;
     $('.status').html('');
-    // $('body').append("Status: Processing...");
 
     if (javaBackend['deleteJobs']) {
         var status = javaBackend.deleteJobs(""+id);
-        $('body').append("Status: " + status);
+
         if (status) {
-            // $deleteBtn.closest('tr').remove();
             location.reload();
         } else {
             $('.status').addClass('text-danger').append('The delete job has failed');
@@ -109,4 +147,12 @@ function setJobId(evt) {
     var id = evt.currentTarget.dataset.id;
     localStorage.setItem('editJobId', id);
     // $('body').append("2. editJobId: " + localStorage.getItem('editJobId') + '@'+ id);
+}
+
+function getCurrentField($selector) {
+    if (!$selector || $selector.length === 0) return null;
+    if ($selector.eq(1).hasClass('d-none')) {
+        return $selector.eq(0);
+    }
+    return $selector.eq(1);
 }

@@ -1,5 +1,11 @@
 package com.AI.html;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.FileAlreadyExistsException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
@@ -16,18 +22,52 @@ import java.time.format.DateTimeFormatter;
 import java.time.ZoneId;
 
 public class Database {
-    static final String URL = "jdbc:mysql://localhost:3306/demo";
-    static final String USER = "root";
-    static final String PASS = "";
+    private static final String FILE = System.getProperty("user.home") + "/.resumeparser.db";
+    private static final String URL = "jdbc:sqlite:/" + FILE;
+    static final String USER = "user1";
+    static final String PASS = "testpass";
+    public static String lastCreatedDate = "";
+
+    public static void init() {
+        Path path = Paths.get(FILE);
+        try {
+            // This creates the file only if it doesn't exist. 
+            // If it exists, it throws a FileAlreadyExistsException.
+            Files.createFile(path);
+            System.out.println("File created: " + path);
+            Database.createTables();
+        } catch (FileAlreadyExistsException e) {
+            System.out.println("File already exists, skipping creation.");
+        } catch (IOException e) {
+            System.err.println("Failed to create file: " + e.getMessage());
+        }
+    }
+
+    private static void createTables() {
+        String createJobsTable = "CREATE TABLE IF NOT EXISTS jobs ("
+                + "id INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + "\"role\" TEXT,"
+                + "\"exp\" TEXT,"
+                + "createDate TEXT(20));";
+
+        String createResumeDataTable = "CREATE TABLE IF NOT EXISTS resumedata ("
+                + "id INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + "info TEXT,"
+                + "createDate TEXT, jobid INTEGER);";
+
+        try (Connection conn = connectDB(); Statement stmt = conn.createStatement()) {
+            stmt.execute(createJobsTable);
+            stmt.execute(createResumeDataTable);
+            conn.close();
+            System.out.println("Tables created successfully.");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
     public static Connection connectDB() {
-        final String URL = "jdbc:sqlite:app.db";
-        final String USER = "user1";
-        final String PASS = "testpass";
         try {
             Connection conn = DriverManager.getConnection(URL, USER, PASS);
-            System.out.println("Connection established successfully.");
-            // conn.close();
             return conn;
         } catch (Exception e) {
             e.printStackTrace();
@@ -41,23 +81,21 @@ public class Database {
             return 0;
         }
         try (Connection connection = conn) {
-            String placeHolders = "";
+            String placeHolders = "", lastCreatedDate = "";
             for (int i = 1; i <= columnList.size(); i++) {
-                // if (i == columnList.size()) {
-                //     placeHolders += "?";
-                //     break;
-                // }
                 placeHolders += "?,";
             }
             PreparedStatement ps = conn
-                    .prepareStatement("INSERT INTO " + table + " (" + columns + ", createDate) VALUES (" + placeHolders + "?)");
+                    .prepareStatement(
+                            "INSERT INTO " + table + " (" + columns + ", createDate) VALUES (" + placeHolders + "?)");
             for (int i = 0; i < columnList.size(); i++) {
                 ps.setString(i + 1, columnList.get(i));
             }
-            ps.setString(columnList.size() + 1, getIndianDate());
+            lastCreatedDate = getIndianDate();
+            ps.setString(columnList.size() + 1, lastCreatedDate);
             int rowsAffected = ps.executeUpdate();
             System.out.println(rowsAffected + " record(s) added.");
-
+            conn.close();
             return 1;
         } catch (SQLIntegrityConstraintViolationException e) {
             System.out.println("Record already exists: " + e.getMessage());
@@ -65,6 +103,37 @@ public class Database {
         } catch (Exception e) {
             e.printStackTrace();
             return -1;
+        }
+    }
+
+    public static String createAndReturnDate(Connection conn, String table, String columns, List<String> columnList) {
+        if (conn == null || table == null || table.isEmpty()) {
+            System.out.println("Connection is null or table name is invalid.");
+            return "0";
+        }
+        try (Connection connection = conn) {
+            String placeHolders = "", lastCreatedDate = "";
+            for (int i = 1; i <= columnList.size(); i++) {
+                placeHolders += "?,";
+            }
+            PreparedStatement ps = conn
+                    .prepareStatement(
+                            "INSERT INTO " + table + " (" + columns + ", createDate) VALUES (" + placeHolders + "?)");
+            for (int i = 0; i < columnList.size(); i++) {
+                ps.setString(i + 1, columnList.get(i));
+            }
+            lastCreatedDate = getIndianDate();
+            ps.setString(columnList.size() + 1, lastCreatedDate);
+            int rowsAffected = ps.executeUpdate();
+            System.out.println(rowsAffected + " record(s) added.");
+            conn.close();
+            return lastCreatedDate;
+        } catch (SQLIntegrityConstraintViolationException e) {
+            System.out.println("Record already exists: " + e.getMessage());
+            return "-1";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "-1";
         }
     }
 
@@ -76,7 +145,8 @@ public class Database {
             ps.setString(3, id);
             int rowsaffect = ps.executeUpdate();
 
-            System.out.println(rowsaffect + " Updated");
+            System.out.println(rowsaffect + " record(s) Updated");
+            conn.close();
             return 1;
 
         } catch (SQLException e) {
@@ -90,10 +160,11 @@ public class Database {
 
     public static boolean delete(Connection conn, String ids) {
         try (Connection connection = conn) {
-            String sql = "DELETE FROM jobs WHERE id IN (" + ids + ")"; 
+            String sql = "DELETE FROM jobs WHERE id IN (" + ids + ")";
             Statement stmt = conn.createStatement();
             stmt.executeUpdate(sql);
-            System.out.println("Delete");
+            System.out.println("1 record deleted");
+            conn.close();
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -104,9 +175,7 @@ public class Database {
     public static ResultSet getAll(Connection conn, String table) {
         ResultSet rs = null;
         try {
-            PreparedStatement ps = conn.prepareStatement("SELECT * FROM " + table);
-            // PreparedStatement ps = conn.prepareStatement("SELECT * FROM user WHERE
-            // email=? AND password=?");
+            PreparedStatement ps = conn.prepareStatement("SELECT * FROM " + table + " order by id desc");
             rs = ps.executeQuery();
         } catch (Exception e) {
             e.printStackTrace();
@@ -127,11 +196,11 @@ public class Database {
     }
 
     public static void main(String[] args) {
-        Connection conn = Database.connectDB();
-        String table = "jobs";
-        List<String> columnList = new ArrayList<>();
-        columnList.add("Senior developer2");
-        columnList.add("10 years");
+        // Connection conn = Database.connectDB();
+        // String table = "jobs";
+        // List<String> columnList = new ArrayList<>();
+        // columnList.add("Senior developer2");
+        // columnList.add("10 years");
         /*
          * Create a new record in the database
          */
@@ -144,18 +213,17 @@ public class Database {
         /*
          * Retrieve all records from the table
          */
-        ResultSet list = Database.getAll(conn, table);
+        // ResultSet list = Database.getAll(conn, table);
 
         /*
          * Retrieve records from the table based on condition
          */
-        // String condition = "id='2'";
-        // String condition = "id IN (4,5)";
+        // String condition = "id != ''";
+        // // String condition = "id IN (4,5)";
         // ResultSet list = Database.get(conn, table, condition);
         // try {
         //     while (list.next()) {
-        //         System.out.println("ID: " + list.getInt("id") + ", Role: " + list.getString("role") + ", Exp: "
-        //                 + list.getString("exp"));
+        //         System.out.println(list.getInt("id") + "  " + list.getString("role") + "-" + list.getString("exp"));
         //     }
         // } catch (Exception e) {
         //     e.printStackTrace();
@@ -167,7 +235,7 @@ public class Database {
     public static String getIndianDate() {
         ZonedDateTime istTime = ZonedDateTime.now(ZoneId.of("Asia/Kolkata"));
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss a");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm:ss a");
         String formattedTime = istTime.format(formatter);
         return formattedTime;
     }
