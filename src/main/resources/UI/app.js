@@ -85,7 +85,7 @@ function processCreateJob(evt) {
         var status = javaBackend.createJobs(role, exp);
 
         if (status) {
-            $('.status').addClass('text-success').append('The create job was successful');
+            $('.status').addClass('text-success').html('The create job was successful');
             if ($roleInput.is('input')) {
                 $('select.role-input').append("<option value='"+role+"'>"+role+"</option>");
             }
@@ -95,7 +95,7 @@ function processCreateJob(evt) {
             $roleInput.val('');
             $expInput.val('');
         } else {
-            $('.status').addClass('text-danger').append('The create job has failed');
+            $('.status').addClass('text-danger').html('The create job has failed');
         }
     }
 }
