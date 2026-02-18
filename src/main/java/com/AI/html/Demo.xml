@@ -1,0 +1,10 @@
+<!-- <web app> -->
+<servlet>
+     <servlet-name>Demo</servlet-name>
+     <servlet-class>Demo</servlet-class>
+</servlet>
+<servlet-mapping>
+     <servlet-name>Demo</servlet-name>
+     <url-pattern> <page class="Create.html"></page></url-pattern>
+</servlet-mapping>
+<!-- </web app> -->
