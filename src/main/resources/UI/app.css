@@ -5,15 +5,19 @@
 body {
     background-color: #f8f9fa;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    margin-right: 8px;
+    /* margin-right: 8px; */
 }
 
 .nav-link.active {
     border: 2px inset rgb(13, 110, 253);
 }
 
-.container {
+.container, .container-fluid {
     border-radius: 20px;
+}
+
+.dashboard-page {
+    overflow: hidden;
 }
 
 .form-card {
@@ -35,6 +39,12 @@ body {
 
 .mt-20 {
     margin-top: 20vh;
+}
+
+.dashboard-page .container {
+    margin-top: 5vh;
+    margin-bottom: 5vh;
+    width: 100%;
 }
 
 .px-20 {
@@ -117,7 +127,8 @@ body {
 }
 
 #historyList {
-    max-height: 560px;
+    /* max-height: 560px; */
+    max-height: 54vh;
     overflow-y: auto;
 }
 /* END: Resume-analyzer page CSS */

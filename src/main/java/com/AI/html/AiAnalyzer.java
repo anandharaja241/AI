@@ -41,12 +41,23 @@ public class AiAnalyzer {
             String response = sendAiRequest(prompt);
             String score = "", result = "", reason = "", skills = "", email = "", mobile = "";
 
-            // String response = "{\"score\": 20, \"result\": \"Not Matched\", \"reason\": \"No Relevant Java and Spring Boot experience\", \"skills\": \"No relevant skills found\", \"email\": \"vvbala1995@gmail.com\", \"mobile\": \"9876543211, ...\"}";
+            // String response = "{\"score\": 20, \"result\": \"Not Matched\", \"reason\":
+            // \"No Relevant Java and Spring Boot experience\", \"skills\": \"No relevant
+            // skills found\", \"email\": \"vvbala1995@gmail.com\", \"mobile\":
+            // \"9876543211, ...\"}";
             // System.out.println("AI prompt: " + prompt);
             // System.out.println("AI Result: " + response);
             String cleanResponse = response.trim();
 
-            System.out.println("cleanResponse:"+cleanResponse);
+            // Remove json and if present
+            if (cleanResponse.startsWith("")) {
+                cleanResponse = cleanResponse
+                        .replaceAll("json", "")
+                        .replaceAll("```", "")
+                        .trim();
+            }
+
+            System.out.println("cleanResponse:" + cleanResponse);
             JsonObject output = JsonParser.parseString(cleanResponse).getAsJsonObject();
             score = output.get("score").getAsString();
             result = output.get("result").getAsString();
@@ -55,7 +66,8 @@ public class AiAnalyzer {
             email = output.get("email").getAsString();
             mobile = output.get("mobile").getAsString();
             String jobTitle = getJobById(jobId);
-            dbString = score + ";;" + result + ";;" + reason + ";;" + skills + ";;" + fileName + ";;" + jobTitle + ";;" + email + ";;" + mobile;
+            dbString = score + ";;" + result + ";;" + reason + ";;" + skills + ";;" + fileName + ";;" + jobTitle + ";;"
+                    + email + ";;" + mobile;
             System.out.println(dbString);
             String lastCreatedDate = insertData(dbString, jobId);
             String lastCreatedDateString = lastCreatedDate.equalsIgnoreCase("") ? "-" : "Created: " + lastCreatedDate;
@@ -63,22 +75,25 @@ public class AiAnalyzer {
             String color = result.equalsIgnoreCase("Matched") ? "text-success" : "text-danger";
 
             htmlString = "<div class=\"card resume-card shadow-sm mb-3\">\n" + //
-                                "    <div class=\"card-body d-flex justify-content-between align-items-center\">\n" + //
-                                "        <div>\n" + //
-                                "            <h5 class=\"mb-1 text-primary\">"+fileName+"</h5>\n" + //
-                                "            <p class=\"mb-0 text-muted\"><i class=\"bi bi-briefcase me-1\"></i> Match for: "+role+"</p>\n" + //
-                                "            <small class=\"text-secondary\">Extracted Skills: "+skills+"</small>\n" + //
-                                "            <p class=\"text-secondary m-0\">Reason: " + reason + "</p>\n" + //
-                                "            <p class=\"text-secondary m-0\">Email: " + (email != null && !email.isEmpty() ? email : "-") + "</p>\n" + //
-                                "            <p class=\"text-secondary m-0\">Mobile: " + (mobile != null && !mobile.isEmpty() ? mobile : "-") + "</p>\n"+ //
-                                "            <p class=\"text-secondary m-0\">" + lastCreatedDateString + "</p>\n" + //
-                                "        </div>\n" + //
-                                "        <div class=\"text-center\">\n" + //
-                                "            <div class=\""+color+" score-badge\">"+score+"%</div>\n" + //
-                                "            <small class=\""+color+" text-uppercase fw-bold\">"+result+"</small>\n" + //
-                                "        </div>\n" + //
-                                "    </div>\n" + //
-                                "</div>";
+                    "    <div class=\"card-body d-flex justify-content-between align-items-center\">\n" + //
+                    "        <div>\n" + //
+                    "            <h5 class=\"mb-1 text-primary\">" + fileName + "</h5>\n" + //
+                    "            <p class=\"mb-0 text-muted\"><i class=\"bi bi-briefcase me-1\"></i> Match for: " + role
+                    + "</p>\n" + //
+                    "            <small class=\"text-secondary\">Extracted Skills: " + skills + "</small>\n" + //
+                    "            <p class=\"text-secondary m-0\">Reason: " + reason + "</p>\n" + //
+                    "            <p class=\"text-secondary m-0\">Email: "
+                    + (email != null && !email.isEmpty() ? email : "-") + "</p>\n" + //
+                    "            <p class=\"text-secondary m-0\">Mobile: "
+                    + (mobile != null && !mobile.isEmpty() ? mobile : "-") + "</p>\n" + //
+                    "            <p class=\"text-secondary m-0\">" + lastCreatedDateString + "</p>\n" + //
+                    "        </div>\n" + //
+                    "        <div class=\"text-center\">\n" + //
+                    "            <div class=\"" + color + " score-badge\">" + score + "%</div>\n" + //
+                    "            <small class=\"" + color + " text-uppercase fw-bold\">" + result + "</small>\n" + //
+                    "        </div>\n" + //
+                    "    </div>\n" + //
+                    "</div>";
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -90,8 +105,8 @@ public class AiAnalyzer {
         HttpClient client = HttpClient.newHttpClient();
         // Gson gson = new Gson();
         Gson gson = new GsonBuilder()
-        .setStrictness(Strictness.LENIENT)
-        .create();
+                .setStrictness(Strictness.LENIENT)
+                .create();
 
         // Construct the request body using Gson JsonObject
         JsonObject requestBody = new JsonObject();
@@ -160,7 +175,7 @@ public class AiAnalyzer {
                 results += "<div class=\"history-item " + activeClass + "\" data-id=\"" + id + "\">\n" +
                         "    <small class=\"text-muted\">" + created + "</small>\n" +
                         "    <div class=\"fw-bold\">" + jobTitle + "</div>\n" +
-                        "    <small class=\""+color+" fw-bold\">Score: " + score + "%, "+result+"</small>\n" +
+                        "    <small class=\"" + color + " fw-bold\">Score: " + score + "%, " + result + "</small>\n" +
                         "</div>\n";
                 index++;
             }
@@ -238,8 +253,10 @@ public class AiAnalyzer {
                         + jobTitle + "</p>\n" + //
                         "            <small class=\"text-secondary\">Extracted Skills: " + skills + "</small>\n" + //
                         "            <p class=\"text-secondary m-0\">Reason: " + reason + "</p>\n" + //
-                        "            <p class=\"text-secondary m-0\">Email: " + (email != null && !email.isEmpty() ? email : "-") + "</p>\n" + //
-                        "            <p class=\"text-secondary m-0\">Mobile: " + (mobile != null && !mobile.isEmpty() ? mobile : "-") + "</p>\n"+ //
+                        "            <p class=\"text-secondary m-0\">Email: "
+                        + (email != null && !email.isEmpty() ? email : "-") + "</p>\n" + //
+                        "            <p class=\"text-secondary m-0\">Mobile: "
+                        + (mobile != null && !mobile.isEmpty() ? mobile : "-") + "</p>\n" + //
                         "            <p class=\"text-secondary m-0\">Created: " + created + "</p>\n" + //
                         "        </div>\n" + //
                         "        <div class=\"text-center\">\n" + //
@@ -273,13 +290,13 @@ public class AiAnalyzer {
                 String email = info.split(";;")[6];
                 String textColor = result.equalsIgnoreCase("Matched") ? "bg-success" : "bg-danger";
                 results += "<tr>\n" + //
-                            "<td>" + id + "</td>\n" + //
-                            "<td>" + email + "</td>\n" + //
-                            "<td>" + jobTitle + "</td>\n" + //
-                            "<td>" + score + "%</td>\n" + //
-                            "<td><span class=\"badge " + textColor + "\">" + result + "</span></td>\n" + //
-                            "<td>" + created + "</td>\n" + //
-                            "</tr>";
+                        "<td>" + id + "</td>\n" + //
+                        "<td>" + email + "</td>\n" + //
+                        "<td>" + jobTitle + "</td>\n" + //
+                        "<td>" + score + "%</td>\n" + //
+                        "<td><span class=\"badge " + textColor + "\">" + result + "</span></td>\n" + //
+                        "<td>" + created + "</td>\n" + //
+                        "</tr>";
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -287,19 +304,24 @@ public class AiAnalyzer {
         }
         return results;
     }
+
     public static String processWithAI(String fileName, String base64Data, String jobId) {
         String resultHtml = "";
         try {
-            String filePath = saveBase64ToFile(base64Data, "uploads/" + fileName);
+            Path uploadPath = createUploadFolder();
+            String filePath = saveBase64ToFile(base64Data, uploadPath.resolve(fileName).toString());
+
             String resumeText = extractTextFromFile(filePath);
 
             String roleString = getJobTitleById(jobId);
 
             // 2. Prepare AI Prompt
             String prompt = "Analyze this resume text for the role of '" + roleString +
-                    "'. Provide a match score (0-100), result(Matched or Not Matched), 1 line explanation for the score as reason and 3 key skills if exists, otherwise return 'No relevant skills found', extracted valid email and mobile numbers if available. " +
+                    "'. Provide a match score (0-100), result(Matched or Not Matched), 1 line explanation for the score as reason and 3 key skills if exists, otherwise return 'No relevant skills found', extracted valid email and mobile numbers if available. "
+                    +
                     "Return ONLY a JSON object with this sample format: " +
-                    "{\"score\": 85, \"result\": \"Matched or Not Matched\", \"reason\": \"Short explanation for the score\", \"skills\": \"skill1, skill2, skill3\", \"email\": \"user@example.com\", \"mobile\": \"9876543211, ...\"} " +
+                    "{\"score\": 85, \"result\": \"Matched or Not Matched\", \"reason\": \"Short explanation for the score\", \"skills\": \"skill1, skill2, skill3\", \"email\": \"user@example.com\", \"mobile\": \"9876543211, ...\"} "
+                    +
                     "Resume text: " + resumeText;
 
             // 3. Call AI API (Example using an HTTP client)
@@ -308,6 +330,20 @@ public class AiAnalyzer {
             e.printStackTrace();
         }
         return resultHtml;
+    }
+
+    public static Path createUploadFolder() throws IOException {
+
+        Path projectRoot = Paths.get("").toAbsolutePath();
+
+        Path uploadPath = projectRoot.resolve("uploads");
+
+        if (!Files.exists(uploadPath)) {
+            Files.createDirectories(uploadPath);
+            System.out.println("Uploads folder created at: " + uploadPath);
+        }
+
+        return uploadPath;
     }
 
     public static String saveBase64ToFile(String base64Content, String outputFilePath) throws IOException {
@@ -340,8 +376,8 @@ public class AiAnalyzer {
                 }
             } else if (isDocx || isDoc || isOctDoc) {
                 try (InputStream in = Files.newInputStream(Paths.get(filePath));
-                    XWPFDocument doc = new XWPFDocument(in);
-                    XWPFWordExtractor ext = new XWPFWordExtractor(doc)) {
+                        XWPFDocument doc = new XWPFDocument(in);
+                        XWPFWordExtractor ext = new XWPFWordExtractor(doc)) {
                     extractedText = ext.getText();
                 }
             }

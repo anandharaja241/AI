@@ -37,8 +37,9 @@ function analyzeResume() {
         reader.onload = function (e) {
             const base64Data = e.target.result.split(',')[1]; // Get data after the comma
             const filePath = file.name;
-            const filePathParts = filePath.split('/');
-            const fileName = filePathParts.pop();
+            //spilt using both windows + linux separator
+            var fileName = filePath.split(/[/\\]/).pop();
+            fileName = fileName.replaceAll(" ", "-");
 
             // Send to Java via Bridge
             var resultHtml = javaBackend.processWithAI(fileName, base64Data, role);
